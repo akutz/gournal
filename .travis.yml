@@ -1,0 +1,20 @@
+go_import_path: github.com/emccode/gournal
+
+language: go
+go:
+  - 1.4.3
+  - 1.5.4
+  - 1.6.3
+  - tip
+
+os:
+  - linux
+  - osx
+
+matrix:
+  allow_failures:
+    - go: tip
+
+script:
+  - go test ./...
+  - go test -run Benchmark -bench . -benchmem . 2> /dev/null
