@@ -60,6 +60,21 @@ COVERAGE_ENABLED := 1
 endif
 endif
 
+# explicitly enable vendoring for Go 1.5.x versions.
+GO15VENDOREXPERIMENT := 1
+
+ifneq (,$(strip $(findstring 1.3.,$(TRAVIS_GO_VERSION))))
+PRE_GO15 := 1
+endif
+
+ifneq (,$(strip $(findstring 1.4.,$(TRAVIS_GO_VERSION))))
+PRE_GO15 := 1
+endif
+
+ifneq (1,$(PRE_GO15))
+export GO15VENDOREXPERIMENT
+endif
+
 
 ################################################################################
 ##                                  PATH                                      ##
@@ -265,8 +280,9 @@ endif
 ################################################################################
 ##                               DEPENDENCIES                                 ##
 ################################################################################
+ifneq (1,$(PRE_GO15))
+
 GLIDE := $(GOPATH)/bin/glide
-GOGET_LOCK := goget.lock
 GLIDE_LOCK := glide.lock
 GLIDE_YAML := glide.yaml
 GLIDE_LOCK_D := glide.lock.d
@@ -310,10 +326,26 @@ GO_PHONY += $(GLIDE_LOCK)-clean
 GO_CLOBBER += $(GLIDE_LOCK)-clean
 endif
 
+else
+GOGET_D := .go.get.d
+
+$(GOGET_D):
+	go get -t -d ./... && touch $@
+GO_DEPS += $(GOGET_D)
+
+$(GOGET_D)-clean:
+	rm -f $(GOGET_D)
+GO_PHONY += $(GOGET_D)-clean
+
+endif
 
 ################################################################################
 ##                               GOMETALINTER                                 ##
 ################################################################################
+ifeq (1,$(PRE_GO15))
+GOMETALINTER_DISABLED := 1
+endif
+
 ifneq (1,$(GOMETALINTER_DISABLED))
 GOMETALINTER := $(GOPATH)/bin/gometalinter
 
@@ -476,14 +508,15 @@ else
 	@echo codecov offline
 endif
 
-ifeq (1,$(COVERAGE_ENABLED))
 .coverage.tools.d:
+ifeq (1,$(COVERAGE_ENABLED))
 	go get github.com/onsi/gomega \
            github.com/onsi/ginkgo \
-           golang.org/x/tools/cmd/cover && \
-    touch $@
-GO_DEPS += .coverage.tools.d
+           golang.org/x/tools/cmd/cover && touch $@
+else
+	go get golang.org/x/tools/cmd/cover && touch $@
 endif
+GO_DEPS += .coverage.tools.d
 
 
 ################################################################################
