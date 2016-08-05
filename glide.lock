@@ -1,0 +1,20 @@
+hash: c67bd030a67324cdaaf4b9ee83bdae505f4e555f6ebd1cc99b7a72e729acad64
+updated: 2016-08-05T12:02:49.044558803-05:00
+imports:
+- name: github.com/Sirupsen/logrus
+  version: a283a10442df8dc09befd873fab202bf8a253d6a
+- name: github.com/stretchr/testify
+  version: d77da356e56a7428ad25149ca77381849a6a5232
+- name: github.com/uber-go/atomic
+  version: 0c9e689d64f004564b79d9a663634756df322902
+- name: github.com/uber-go/zap
+  version: f6059af9adb56642e6cb2a91051feb930eba6342
+- name: golang.org/x/net
+  version: 7c62cfdcccc65f87b0120ec841012ba816fc1aec
+  subpackages:
+  - context
+- name: golang.org/x/sys
+  version: a646d33e2ee3172a661fc09bca23bb4889a41bc8
+  subpackages:
+  - unix
+devImports: []
