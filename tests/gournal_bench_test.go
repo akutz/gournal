@@ -1,4 +1,4 @@
-package gournal_test
+package gournal
 
 import (
 	"log"
