@@ -1,4 +1,4 @@
-# Gournal [![GoDoc](https://godoc.org/github.com/emccode/gournal?status.svg)](https://godoc.org/github.com/emccode/gournal) [![Build Status](https://travis-ci.org/emccode/gournal.svg?branch=master)](https://travis-ci.org/emccode/gournal) [![Go Report Card](https://goreportcard.com/badge/github.com/emccode/gournal)](https://goreportcard.com/report/github.com/emccode/gournal)
+# Gournal [![GoDoc](https://godoc.org/github.com/emccode/gournal?status.svg)](https://godoc.org/github.com/emccode/gournal) [![Build Status](https://travis-ci.org/emccode/gournal.svg?branch=master)](https://travis-ci.org/emccode/gournal) [![Go Report Card](https://goreportcard.com/badge/github.com/emccode/gournal)](https://goreportcard.com/report/github.com/emccode/gournal) [![codecov](https://codecov.io/gh/emccode/gournal/branch/master/graph/badge.svg)](https://codecov.io/gh/emccode/gournal)
 Gournal (pronounced "Journal") is a Context-aware logging framework
 that introduces the Google [Context type](https://blog.golang.org/context) as
 a first-class parameter to all common log functions such as Info, Debug, etc.
