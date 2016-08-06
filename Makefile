@@ -527,6 +527,27 @@ benchmark: ./tests/gournal.test
 
 
 ################################################################################
+##                                 EXAMPLES                                   ##
+################################################################################
+run-example-1: build
+	go run ./examples/01/main.go
+
+run-example-2: build
+	go run ./examples/02/main.go
+
+run-example-3: build
+	go run ./examples/03/main.go
+
+run-example-4: build
+	go run ./examples/04/main.go
+
+run-examples:
+	@echo EXAMPLE 1 && $(MAKE) run-example-1 && echo
+	@echo EXAMPLE 2 && $(MAKE) run-example-2 && echo
+	@echo EXAMPLE 3 && $(MAKE) run-example-3 && echo
+
+
+################################################################################
 ##                                  TARGETS                                   ##
 ################################################################################
 deps: $(GO_DEPS)

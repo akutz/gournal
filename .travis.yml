@@ -31,3 +31,4 @@ script:
 after_success:
   - make -j cover
   - make benchmark
+  - make run-examples
