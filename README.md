@@ -12,7 +12,7 @@ favorite logger, rather existing logging frameworks such as
 easily participate as a Gournal Appender.
 
 The following
-[example](https://github.com/emccode/gournal/tree/master/examples/00/main.go)
+[example](https://github.com/emccode/gournal/tree/master/examples/01/main.go)
 is a simple program that uses Logrus as a Gournal Appender to emit some log
 data:
 
@@ -44,7 +44,7 @@ To run the above example, clone this project and execute the following from the
 command line:
 
 ``` bash
-$ go run ./examples/00/main.go
+$ make run-exmaple-1
 INFO[0000] Hello Bob                                    
 WARN[0000] Hello Mary                                    location=Austin size=1
 ```
@@ -84,19 +84,26 @@ The above benchmark information (results may vary) was generated using the
 following command:
 
 ```bash
-$ go test -run Benchmark -bench . -benchmem . 2> /dev/null
+$ make benchmark
+tests/gournal.test -test.run Benchmark -test.bench . -test.benchmem 2> /dev/null
 PASS
-BenchmarkNativeStdLibWithoutFields-8 	 1000000	      1311 ns/op	      32 B/op	       2 allocs/op
-BenchmarkNativeLogrusWithoutFields-8 	  500000	      3308 ns/op	     848 B/op	      20 allocs/op
-BenchmarkNativeZapWithoutFields-8    	 1000000	      1313 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGournalStdLibWithoutFields-8	 1000000	      2214 ns/op	     132 B/op	      10 allocs/op
-BenchmarkGournalLogrusWithoutFields-8	  500000	      3370 ns/op	     963 B/op	      25 allocs/op
-BenchmarkGournalZapWithoutFields-8   	 1000000	      1387 ns/op	      35 B/op	       5 allocs/op
-BenchmarkGournalStdLibWithFields-8   	  300000	      4455 ns/op	     953 B/op	      26 allocs/op
-BenchmarkGournalLogrusWithFields-8   	  300000	      4314 ns/op	    1769 B/op	      35 allocs/op
-BenchmarkGournalZapWithFields-8      	  500000	      2526 ns/op	     681 B/op	      13 allocs/op
-ok  	github.com/emccode/gournal	13.752s
+BenchmarkNativeStdLibWithoutFields-8 	 1000000	      1308 ns/op	      32 B/op	       2 allocs/op
+BenchmarkNativeLogrusWithoutFields-8 	  500000	      3312 ns/op	     848 B/op	      20 allocs/op
+BenchmarkNativeZapWithoutFields-8    	 1000000	      1360 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGournalStdLibWithoutFields-8	 1000000	      2210 ns/op	     132 B/op	      10 allocs/op
+BenchmarkGournalLogrusWithoutFields-8	  500000	      3416 ns/op	     963 B/op	      25 allocs/op
+BenchmarkGournalZapWithoutFields-8   	 1000000	      1487 ns/op	      35 B/op	       5 allocs/op
+BenchmarkGournalStdLibWithFields-8   	  300000	      4601 ns/op	     953 B/op	      26 allocs/op
+BenchmarkGournalLogrusWithFields-8   	  300000	      4615 ns/op	    1770 B/op	      35 allocs/op
+BenchmarkGournalZapWithFields-8      	  500000	      2657 ns/op	     681 B/op	      13 allocs/op
+coverage: 21.8% of statements in github.com/emccode/gournal
 ```
+
+Please keep in mind that the above results will vary based upon the version of
+dependencies used. This project uses
+[Glide](https://github.com/Masterminds/glide/) to pin dependencies such as
+Logrus and Zap. Still, even with the same dependency versions, benchmark results
+will always have a slight bit of skew.
 
 ## Configuration
 Gournal is configured primarily via the Context instances supplied to the
@@ -114,9 +121,17 @@ Please note that there is no default value for `DefaultAppender`. If this
 field is not assigned and log function is invoked with a nil `Context` or one
 absent an `Appender` object, a panic will occur.
 
-## Concurrent Logging Framework Support
+## Features
+Gournal provides several features on top of the underlying logging framework
+that is doing the actual logging:
+
+ * [Concurrent Logging Frameworks](#concurrent-logging-frameworks)
+ * [Global Context Fields](#global-context-fields)
+ * [Multiple Log Levels](#multiple-log-levels)
+
+### Concurrent Logging Frameworks
 The following
-[example](https://github.com/emccode/gournal/tree/master/examples/01/main.go)
+[example](https://github.com/emccode/gournal/tree/master/examples/02/main.go)
 illustrates how to utilize the Gournal `DefaultAppender` as well as multiple
 logging frameworks in the same program:
 
@@ -168,18 +183,18 @@ To run the above example, clone this project and execute the following from the
 command line:
 
 ```bash
-$ go run ./examples/01/main.go
+$ make run-example-2
 {"level":"error","ts":1470251785.437946,"msg":"Hello Bob","size":2,"location":"Boston"}
 {"level":"info","ts":1470251785.4379828,"msg":"Hello Mary"}
 WARN[0000] Hello Alice                                   location=Austin size=1
 ```
 
-## Context Fields
+### Global Context Fields
 Another nifty feature of Gournal is the ability to provide a Context with
 fields that will get emitted along-side every log message, whether they are
 explicitly provided with log message or not. This feature is illustrated
 in the
-[example](https://github.com/emccode/gournal/tree/master/examples/02/main.go)
+[example](https://github.com/emccode/gournal/tree/master/examples/03/main.go)
 below:
 
 ```go
@@ -269,9 +284,131 @@ To run the above example, clone this project and execute the following from the
 command line:
 
 ```bash
-$ go run examples/02/main.go
+$ make run-example-3
 INFO[0000] Discovered planet                             color=65280 name=Venus
 INFO[0000] Discovered planet                             distance=42 galaxy=Milky Way
 INFO[0000] Discovered planet                             point={x:1 y:-1}
 INFO[0000] Discovered planet                             point={x:1 y:-1 z:3}
+```
+
+### Multiple Log Levels
+Instead of creating multiple logger instances that exist and consume resources
+for no other reason than to have multiple log levels, Gournal supports multiple
+log levels as well as ensuring that no resources are wasted if a log entry does
+not meet the level qualifications:
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"golang.org/x/net/context"
+
+	log "github.com/emccode/gournal"
+	glogrus "github.com/emccode/gournal/logrus"
+)
+
+// myString is a custom type that has a custom fmt.Format function.
+// This function should *not* be invoked unless the log level is such that the
+// log message would actually get emitted. This saves resources as fields
+// and formatters are not invoked at all unless the log level allows an
+// entry to be logged.
+type myString string
+
+func (s myString) Format(f fmt.State, c rune) {
+	fmt.Println("* INVOKED MYSTRING FORMATTER")
+	fmt.Fprint(f, string(s))
+}
+
+func main() {
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, log.AppenderKey, glogrus.New())
+
+	counter := 0
+
+	// Set up a context fields callback that will print a loud message to the
+	// console so it is very apparent when the function is invoked. This
+	// function should *not* be invoked unless the log level is such that the
+	// log message would actually get emitted. This saves resources as fields
+	// and formatters are not invoked at all unless the log level allows an
+	// entry to be logged.
+	getCtxFieldsFunc := func() map[string]interface{} {
+		counter++
+		fmt.Println("* INVOKED CONTEXT FIELDS")
+		return map[string]interface{}{"counter": counter}
+	}
+	ctx = context.WithValue(ctx, log.FieldsKey, getCtxFieldsFunc)
+
+	var name myString = "Bob"
+
+	// Log "Hello Bob" at the INFO level. This log entry will not get emitted
+	// because the default Gournal log level (configurable by
+	// gournal.DefaultLevel) is ERROR.
+	//
+	// Additionally, we should *not* see the messages produced by the
+	// myString.Format and getCtxFieldsFunc functions.
+	log.Info(ctx, "Hello %s", name)
+
+	// Keep a reference to the context that has the original log level.
+	oldCtx := ctx
+
+	// Set the context's log level to be INFO.
+	ctx = context.WithValue(ctx, log.LevelKey, log.InfoLevel)
+
+	// Note the log level has been changed to INFO. This is also a marker to
+	// show that the previous log and messages generated by the functions should
+	// not have occurred prior to this statement in the terminal.
+	fmt.Println("* CTX LOG LEVEL INFO")
+
+	name = "Mary"
+
+	fields := map[string]interface{}{
+		"length":   8,
+		"location": "Austin",
+	}
+
+	// Log "Hello Mary" with some field information. We should not only see
+	// the messages from the myString.Format and getCtxFieldsFunc functions,
+	// but the field "size" from the getCtxFieldsFunc function should add the
+	// field "counter" to the fields provided directly to this call.
+	log.WithFields(fields).Info(ctx, "Hello %s", name)
+
+	// Log "Hello Mary" again with the exact same info, except use the original
+	// context that did not have an explicit log level. Since the default log
+	// level is still ERROR, nothing will be emitted, not even the messages that
+	// indicate the myString.Format or getCtxFieldsFunc functions are being
+	// invoked.
+	log.WithFields(fields).Info(oldCtx, "Hello %s", name)
+
+	// Update the default log level to INFO
+	log.DefaultLevel = log.InfoLevel
+	fmt.Println("* DEFAULT LOG LEVEL INFO")
+
+	// Log "Hello Mary" again with the exact same info, even use the original
+	// context that did not have an explicit log level. However, since the
+	// default log level is now INFO, the entry will be emitted, along with the
+	// messages from the myString.Format or getCtxFieldsFunc functions are being
+	// invoked.
+	//
+	// Note the counter value has only be incremented once since the function
+	// was not invoked when the log level did not permit the entry to be logged.
+	log.WithFields(fields).Info(oldCtx, "Hello %s", name)
+}
+```
+
+To run the above example, clone this project and execute the following from the
+command line:
+
+```bash
+$ make run-example-4
+go run ./examples/04/main.go
+* CTX LOG LEVEL INFO
+* INVOKED CONTEXT FIELDS
+* INVOKED MYSTRING FORMATTER
+INFO[0000] Hello Mary                                    counter=1 length=8 location=Austin
+* DEFAULT LOG LEVEL INFO
+* INVOKED CONTEXT FIELDS
+* INVOKED MYSTRING FORMATTER
+INFO[0000] Hello Mary                                    counter=2 length=8 location=Austin
 ```
