@@ -16,7 +16,6 @@ to the project's README file or https://github.com/emccode/gournal.
 package gournal
 
 import (
-	"bytes"
 	"fmt"
 	"os"
 	"strconv"
@@ -476,9 +475,7 @@ func sendToAppender(
 	if arg0IsString {
 		msg = fmt.Sprintf(msg, args[1:]...)
 	} else {
-		w := &bytes.Buffer{}
-		fmt.Fprint(w, args[1:]...)
-		msg = w.String()
+		msg = fmt.Sprint(args...)
 	}
 
 	traceAppend(a, ctx, lvl, fields, msg)
