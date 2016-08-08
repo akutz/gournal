@@ -2,20 +2,38 @@ package gournal
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/context"
+	gaetest "google.golang.org/appengine/aetest"
 
 	. "github.com/emccode/gournal"
 	"github.com/emccode/gournal/iowriter"
 )
 
+var gaeCtx context.Context
+
 func TestMain(m *testing.M) {
 	DefaultLevel = DebugLevel
-	os.Exit(m.Run())
+
+	var (
+		err  error
+		done func()
+	)
+
+	if gaeCtx, done, err = gaetest.NewContext(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	ec := m.Run()
+
+	done()
+	os.Exit(ec)
 }
 
 func TestDefaultAppender(t *testing.T) {

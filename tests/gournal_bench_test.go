@@ -9,8 +9,10 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/uber-go/zap"
 	"golang.org/x/net/context"
+	gae "google.golang.org/appengine/log"
 
 	"github.com/emccode/gournal"
+	ggae "github.com/emccode/gournal/gae"
 	glogrus "github.com/emccode/gournal/logrus"
 	glog "github.com/emccode/gournal/stdlib"
 	gzap "github.com/emccode/gournal/zap"
@@ -50,6 +52,15 @@ func BenchmarkNativeZapWithoutFields(b *testing.B) {
 	})
 }
 
+func BenchmarkNativeGAEWithoutFields(b *testing.B) {
+	b.ResetTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			gae.Infof(gaeCtx, "Run Barry, run.")
+		}
+	})
+}
+
 func BenchmarkGournalStdLibWithoutFields(b *testing.B) {
 	benchmarkWithoutFields(
 		b, glog.NewWithOptions(os.Stderr, "", log.LstdFlags))
@@ -63,6 +74,10 @@ func BenchmarkGournalLogrusWithoutFields(b *testing.B) {
 func BenchmarkGournalZapWithoutFields(b *testing.B) {
 	benchmarkWithoutFields(b, gzap.NewWithOptions(
 		zap.NewJSONEncoder(), zap.Output(os.Stderr)))
+}
+
+func BenchmarkGournalGAEWithoutFields(b *testing.B) {
+	benchmarkWithoutFields(b, ggae.New())
 }
 
 func BenchmarkGournalStdLibWithFields(b *testing.B) {
@@ -80,8 +95,17 @@ func BenchmarkGournalZapWithFields(b *testing.B) {
 		zap.NewJSONEncoder(), zap.Output(os.Stderr)))
 }
 
+func BenchmarkGournalGAEWithFields(b *testing.B) {
+	benchmarkWithFields(b, ggae.New())
+}
+
 func newContext(a gournal.Appender) context.Context {
-	ctx := context.Background()
+	var ctx context.Context
+	if a == ggae.New() {
+		ctx = gaeCtx
+	} else {
+		ctx = context.Background()
+	}
 	ctx = context.WithValue(ctx, gournal.LevelKey, gournal.InfoLevel)
 	ctx = context.WithValue(ctx, gournal.AppenderKey, a)
 	return ctx

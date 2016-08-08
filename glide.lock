@@ -1,6 +1,10 @@
-hash: c67bd030a67324cdaaf4b9ee83bdae505f4e555f6ebd1cc99b7a72e729acad64
-updated: 2016-08-05T12:02:49.044558803-05:00
+hash: 5d4fb9ec67324087909cc09f86d835f828131853baa6d2f29ac8d76b3fcdd9d2
+updated: 2016-08-08T01:36:31.76546933-05:00
 imports:
+- name: github.com/golang/protobuf
+  version: c3cefd437628a0b7d31b34fe44b3a7a540e98527
+  subpackages:
+  - proto
 - name: github.com/Sirupsen/logrus
   version: a283a10442df8dc09befd873fab202bf8a253d6a
 - name: github.com/stretchr/testify
@@ -17,4 +21,16 @@ imports:
   version: a646d33e2ee3172a661fc09bca23bb4889a41bc8
   subpackages:
   - unix
+- name: google.golang.org/appengine
+  version: f21d98e7aefbf9ff4d5eeba05d7a925cc7ac20c3
+  subpackages:
+  - log
+  - aetest
+  - internal
+  - internal/log
+  - internal/app_identity
+  - internal/modules
+  - internal/base
+  - internal/datastore
+  - internal/remote_api
 devImports: []

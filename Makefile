@@ -53,6 +53,11 @@ GO_STDLIB := archive archive/tar archive/zip bufio builtin bytes compress \
 GOPATH := $(shell go env | grep GOPATH | sed 's/GOPATH="\(.*\)"/\1/')
 GOHOSTOS := $(shell go env | grep GOHOSTOS | sed 's/GOHOSTOS="\(.*\)"/\1/')
 GOHOSTARCH := $(shell go env | grep GOHOSTARCH | sed 's/GOHOSTARCH="\(.*\)"/\1/')
+ifneq (,$(TRAVIS_GO_VERSION))
+GOVERSION := $(TRAVIS_GO_VERSION)
+else
+GOVERSION := $(shell go version | awk '{print $$3}' | cut -c3-)
+endif
 
 ifeq (1.6.3,$(TRAVIS_GO_VERSION))
 ifeq (linux,$(TRAVIS_OS_NAME))
@@ -135,6 +140,33 @@ endif
 
 
 ################################################################################
+##                                 GAE SDK                                    ##
+################################################################################
+GAE_VER := 1.9.40
+GAE_ZIP := go_appengine_sdk_$(GOHOSTOS)_$(GOHOSTARCH)-$(GAE_VER).zip
+GAE_URL := https://storage.googleapis.com/appengine-sdks/featured/$(GAE_ZIP)
+GAE_SDK := ./.gaesdk/$(GAE_VER)
+GAE_SDZ := $(GAE_SDK)/$(GAE_ZIP)
+GAE_DEV := $(GAE_SDK)/go_appengine/dev_appserver.py
+GAE_GOA := $(GAE_SDK)/go_appengine/goapp
+export PATH := $(PATH):$(dir $(GAE_DEV))
+
+$(GAE_SDZ):
+	mkdir -p $(GAE_SDK) && \
+		cd $(GAE_SDK) && \
+		curl -sSLO $(GAE_URL) && \
+		cd -
+
+gae-dev: $(GAE_DEV)
+$(GAE_DEV): $(GAE_SDZ)
+	cd $(?D) && unzip -q $(?F) && cd - && touch $@
+
+GO_DEPS += $(GAE_DEV)
+./gae/gae.test: | $(GAE_DEV) $(GAE_GOA)
+./tests/gournal.test: | $(GAE_DEV) $(GAE_GOA)
+
+
+################################################################################
 ##                              PROJECT DETAIL                                ##
 ################################################################################
 
@@ -208,6 +240,9 @@ ALL_TESTS += $$(PKG_TA_$1)
 -include $1/coverage.mk
 TEST_COVERPKG_$1 ?= $$(IMPORT_PATH_$1)
 
+-include $1/gotest.mk
+TEST_GO_$1 ?= go
+
 TEST_DEPS_$1 := $$(subst $$(COMMA), ,$$(word 9,$$(IMPORT_PATH_INFO_$1)))
 TEST_DEPS_$1 := $$(wordlist 2,$$(words $$(TEST_DEPS_$1)),$$(TEST_DEPS_$1))
 TEST_DEPS_$1 := $$(filter-out $$(GO_STDLIB),$$(TEST_DEPS_$1))
@@ -255,6 +290,7 @@ info:
 	$(info GOPATH......................$(GOPATH))
 	$(info GOHOSTOS....................$(GOHOSTOS))
 	$(info GOHOSTARCH..................$(GOHOSTARCH))
+	$(info GOVERSION...................$(GOVERSION))
 ifneq (,$(strip $(SRCS)))
 	$(info Sources.....................$(patsubst ./%,%,$(firstword $(SRCS))))
 	$(foreach s,$(patsubst ./%,%,$(wordlist 2,$(words $(SRCS)),$(SRCS))),\
@@ -456,7 +492,7 @@ $$(PKG_TA_$1): $$(SRCS_$1)
 endif
 
 $$(PKG_TA_$1): $$(TEST_SRCS_$1) $$(TEST_EXT_DEPS_SRCS_$1) | $$(TEST_DEPS_ARKS_$1)
-	go test -cover -coverpkg '$$(TEST_COVERPKG_$1)' -c -o $$@ $1
+	$$(TEST_GO_$1) test -cover -coverpkg '$$(TEST_COVERPKG_$1)' -c -o $$@ $1
 $$(PKG_TA_$1)-clean:
 	rm -f $$(PKG_TA_$1)
 GO_PHONY += $$(PKG_TA_$1)-clean

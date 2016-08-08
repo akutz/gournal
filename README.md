@@ -73,37 +73,44 @@ Benchmark | Logger | Time | Malloc Size | Malloc Count
 Native without Fields | `log.Logger` | 1311 ns/op | 32 B/op | 2 allocs/op
        | Logrus | 3308 ns/op | 848 B/op | 20 allocs/op
        | Zap | 1313 ns/op | 0 B/op | 0 allocs/op
+       | Google App Engine | 1237 ns/op | 32 B/op | 1 allocs/op
 Gournal without Fields | `log.Logger` | 2214 ns/op | 132 B/op | 10 allocs/op
        | Logrus | 3370 ns/op | 963 B/op | 25 allocs/op
        | Zap | 1387 ns/op | 35 B/op | 5 allocs/op
+       | Google App Engine | 1481 ns/op | 35 B/op | 5 allocs/op
 Gournal with Fields | `log.Logger` | 4455 ns/op | 953 B/op | 26 allocs/op
        | Logrus | 4314 ns/op | 1769 B/op | 35 allocs/op
        | Zap | 2526 ns/op | 681 B/op | 13 allocs/op
+       | Google App Engine | 4434 ns/op | 1081 B/op | 25 allocs/op
 
 The above benchmark information (results may vary) was generated using the
 following command:
 
 ```bash
 $ make benchmark
+./.gaesdk/1.9.40/go_appengine/goapp test -cover -coverpkg 'github.com/emccode/gournal' -c -o tests/gournal.test ./tests
+warning: no packages being tested depend on github.com/emccode/gournal
 tests/gournal.test -test.run Benchmark -test.bench . -test.benchmem 2> /dev/null
 PASS
-BenchmarkNativeStdLibWithoutFields-8 	 1000000	      1308 ns/op	      32 B/op	       2 allocs/op
-BenchmarkNativeLogrusWithoutFields-8 	  500000	      3312 ns/op	     848 B/op	      20 allocs/op
-BenchmarkNativeZapWithoutFields-8    	 1000000	      1360 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGournalStdLibWithoutFields-8	 1000000	      2210 ns/op	     132 B/op	      10 allocs/op
-BenchmarkGournalLogrusWithoutFields-8	  500000	      3416 ns/op	     963 B/op	      25 allocs/op
-BenchmarkGournalZapWithoutFields-8   	 1000000	      1487 ns/op	      35 B/op	       5 allocs/op
-BenchmarkGournalStdLibWithFields-8   	  300000	      4601 ns/op	     953 B/op	      26 allocs/op
-BenchmarkGournalLogrusWithFields-8   	  300000	      4615 ns/op	    1770 B/op	      35 allocs/op
-BenchmarkGournalZapWithFields-8      	  500000	      2657 ns/op	     681 B/op	      13 allocs/op
-coverage: 21.8% of statements in github.com/emccode/gournal
+BenchmarkNativeStdLibWithoutFields-8 	 1000000	      1112 ns/op	      32 B/op	       2 allocs/op
+BenchmarkNativeLogrusWithoutFields-8 	  300000	      3551 ns/op	     848 B/op	      20 allocs/op
+BenchmarkNativeZapWithoutFields-8    	 1000000	      1258 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNativeGAEWithoutFields-8    	 1000000	      1237 ns/op	      32 B/op	       1 allocs/op
+BenchmarkGournalStdLibWithoutFields-8	 1000000	      1975 ns/op	     132 B/op	      10 allocs/op
+BenchmarkGournalLogrusWithoutFields-8	  500000	      3339 ns/op	     963 B/op	      25 allocs/op
+BenchmarkGournalZapWithoutFields-8   	 1000000	      1481 ns/op	      35 B/op	       5 allocs/op
+BenchmarkGournalGAEWithoutFields-8   	 1000000	      1666 ns/op	      67 B/op	       6 allocs/op
+BenchmarkGournalStdLibWithFields-8   	  300000	      4475 ns/op	     953 B/op	      26 allocs/op
+BenchmarkGournalLogrusWithFields-8   	  300000	      5218 ns/op	    1770 B/op	      35 allocs/op
+BenchmarkGournalZapWithFields-8      	  500000	      3029 ns/op	     681 B/op	      13 allocs/op
+BenchmarkGournalGAEWithFields-8      	  300000	      4434 ns/op	    1081 B/op	      25 allocs/op
+coverage: 22.2% of statements in github.com/emccode/gournal
 ```
 
 Please keep in mind that the above results will vary based upon the version of
 dependencies used. This project uses
 [Glide](https://github.com/Masterminds/glide/) to pin dependencies such as
-Logrus and Zap. Still, even with the same dependency versions, benchmark results
-will always have a slight bit of skew.
+Logrus and Zap.
 
 ## Configuration
 Gournal is configured primarily via the Context instances supplied to the
