@@ -7,6 +7,10 @@ import:
 
   - package: github.com/Sirupsen/logrus
   - package: github.com/uber-go/zap
+  - package: google.golang.org/appengine
+    subpackages:
+    - log
+    - aetest
 
 ################################################################################
 ##                              Core Dependencies                             ##
