@@ -54,6 +54,7 @@ Gournal provides ready-to-use Appenders for the following logging frameworks:
 
   * [Logrus](https://github.com/emccode/gournal/tree/master/logrus)
   * [Zap](https://github.com/emccode/gournal/tree/master/zap)
+  * [Google App Engine](https://github.com/emccode/gournal/tree/master/gae)
   * [`log.Logger`](https://github.com/emccode/gournal/tree/master/stdlib)
   * [`io.Writer`](https://github.com/emccode/gournal/tree/master/iowriter)
 
