@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/Sirupsen/logrus"
-	"golang.org/x/net/context"
 
 	"github.com/emccode/gournal"
 )
@@ -31,7 +30,7 @@ func NewWithOptions(
 }
 
 func (a *appender) Append(
-	ctx context.Context,
+	ctx gournal.Context,
 	lvl gournal.Level,
 	fields map[string]interface{},
 	msg string) {

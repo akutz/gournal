@@ -1,20 +1,18 @@
 package main
 
 import (
-	"golang.org/x/net/context"
-
-	log "github.com/emccode/gournal"
-	glogrus "github.com/emccode/gournal/logrus"
+	"github.com/emccode/gournal"
+	"github.com/emccode/gournal/logrus"
 )
 
 func main() {
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, log.LevelKey(), log.InfoLevel)
-	ctx = context.WithValue(ctx, log.AppenderKey(), glogrus.New())
+	ctx := gournal.Background()
+	ctx = gournal.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
+	ctx = gournal.WithValue(ctx, gournal.AppenderKey(), logrus.New())
 
-	log.Info(ctx, "Hello %s", "Bob")
+	gournal.Info(ctx, "Hello %s", "Bob")
 
-	log.WithFields(map[string]interface{}{
+	gournal.WithFields(map[string]interface{}{
 		"size":     1,
 		"location": "Austin",
 	}).Warn(ctx, "Hello %s", "Mary")

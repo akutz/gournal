@@ -561,6 +561,10 @@ GO_DEPS += .coverage.tools.d
 benchmark: ./benchmarks/benchmarks.test
 	$? -test.run Benchmark -test.bench . -test.benchmem 2> /dev/null
 
+# make the benchmark coverage file order-dependent upon the GAE coverage file.
+# otherwise parallel make builds aren't happy when two GAE dev servers try to
+# spin up at the same time
+./benchmarks/benchmarks.test.out: | ./gae/gae.test.out
 
 ################################################################################
 ##                                 EXAMPLES                                   ##
