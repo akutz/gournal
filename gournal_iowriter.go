@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-
-	"golang.org/x/net/context"
 )
 
 // NewAppender returns an Appender that writes to os.Stdout.
@@ -25,7 +23,7 @@ type appender struct {
 }
 
 func (a *appender) Append(
-	ctx context.Context,
+	ctx Context,
 	lvl Level,
 	fields map[string]interface{},
 	msg string) {

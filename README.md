@@ -1,6 +1,6 @@
 # Gournal [![GoDoc](https://godoc.org/github.com/emccode/gournal?status.svg)](https://godoc.org/github.com/emccode/gournal) [![Build Status](https://travis-ci.org/emccode/gournal.svg?branch=master)](https://travis-ci.org/emccode/gournal) [![Go Report Card](https://goreportcard.com/badge/github.com/emccode/gournal)](https://goreportcard.com/report/github.com/emccode/gournal) [![codecov](https://codecov.io/gh/emccode/gournal/branch/master/graph/badge.svg)](https://codecov.io/gh/emccode/gournal)
 Gournal (pronounced "Journal") is a Context-aware logging framework
-that introduces the Google [Context type](https://blog.golang.org/context) as
+that introduces the Google [Context type](https://bgournal.golang.org/context) as
 a first-class parameter to all common log functions such as Info, Debug, etc.
 
 ## Getting Started
@@ -20,20 +20,18 @@ data:
 package main
 
 import (
-	"golang.org/x/net/context"
-
-	log "github.com/emccode/gournal"
-	glogrus "github.com/emccode/gournal/logrus"
+	"github.com/emccode/gournal"
+	"github.com/emccode/gournal/logrus"
 )
 
 func main() {
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, log.LevelKey(), log.InfoLevel)
-	ctx = context.WithValue(ctx, log.AppenderKey(), glogrus.New())
+	ctx := gournal.Background()
+	ctx = gournal.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
+	ctx = gournal.WithValue(ctx, gournal.AppenderKey(), logrus.New())
 
-	log.Info(ctx, "Hello %s", "Bob")
+	gournal.Info(ctx, "Hello %s", "Bob")
 
-	log.WithFields(map[string]interface{}{
+	gournal.WithFields(map[string]interface{}{
 		"size":     1,
 		"location": "Austin",
 	}).Warn(ctx, "Hello %s", "Mary")
@@ -49,13 +47,48 @@ INFO[0000] Hello Bob
 WARN[0000] Hello Mary                                    location=Austin size=1
 ```
 
+## Go 1.7 Support
+Prior to Go 1.7 the Context type was not part of the Go standard library
+(StdLib). Instead the Go Context was provided via the `golang.org/x/net/context`
+package. However, due to the growing importance of the type, it is supported by
+Go 1.7 as part of the StdLib in the `context` package.
+
+Since Go interfaces use duck-typing, where an interface is defined is not
+entirely important. However, if a Go 1.7 application imports the old package
+`golang.org/x/net/context`, the application will be needlessly introducing
+an additional dependency since the Go 1.7 StdLib includes the Context type
+already.
+
+Yet, Gournal cannot just immediately abandon support for the old import path
+as not all applications are able to adopt Go 1.7 on day one. Therefore Gournal
+needs to support both pre-1.7 and 1.7 import paths for the Context type. To
+achieve this Gournal defines the following type:
+
+```go
+type Context interface {
+	gournal.Context
+}
+```
+
+The above type is defined in two files. One file is activated for pre-Go 1.7
+toolchains and uses the old import path. The other file is activated for Go 1.7
+and uses the StdLib import path. For convenience Gournal also redefines the
+`WithValue` and `Background` functions.
+
+Because Gournal's Appender interface uses Gournal's Context interface
+definition, implementations of the Appender interface will also be required to
+reference `gournal.Appender` when defining the `Append` function. However,
+any object that satisfies a Google Context, pre or post 1.7, satisfies a
+Gournal Context as well since the latter is just an empty interface that
+inherits one of the former.
+
 ## Compatability
 Gournal provides ready-to-use Appenders for the following logging frameworks:
 
   * [Logrus](https://github.com/emccode/gournal/tree/master/logrus)
   * [Zap](https://github.com/emccode/gournal/tree/master/zap)
   * [Google App Engine](https://github.com/emccode/gournal/tree/master/gae)
-  * [`log.Logger`](https://github.com/emccode/gournal/tree/master/stdlib)
+  * [`gournal.Logger`](https://github.com/emccode/gournal/tree/master/stdlib)
   * [`io.Writer`](https://github.com/emccode/gournal/tree/master/iowriter)
 
 With little overhead, Gournal leverages the Google Context type to provide an
@@ -71,15 +104,15 @@ framework.
 
 Benchmark | Logger | Time | Malloc Size | Malloc Count
 -----|--------|-----------|------|-------------|-------------
-Native without Fields | `log.Logger` | 1024 ns/op | 16 B/op | 1 allocs/op
+Native without Fields | `gournal.Logger` | 1024 ns/op | 16 B/op | 1 allocs/op
        | Logrus | 4118 ns/op | 832 B/op | 19 allocs/op
        | Zap | 1347 ns/op | 0 B/op | 0 allocs/op
        | Google App Engine | 1302 ns/op | 32 B/op | 1 allocs/op
-Gournal without Fields | `log.Logger` | 1230 ns/op | 16 B/op | 1 allocs/op
+Gournal without Fields | `gournal.Logger` | 1230 ns/op | 16 B/op | 1 allocs/op
        | Logrus | 3784 ns/op | 832 B/op | 19 allocs/op
        | Zap | 1448 ns/op | 0 B/op | 0 allocs/op
        | Google App Engine | 1641 ns/op | 32 B/op | 1 allocs/op
-Gournal with Fields | `log.Logger` | 4424 ns/op | 881 B/op | 18 allocs/op
+Gournal with Fields | `gournal.Logger` | 4424 ns/op | 881 B/op | 18 allocs/op
        | Logrus | 6467 ns/op | 1746 B/op | 31 allocs/op
        | Zap | 3160 ns/op | 641 B/op | 8 allocs/op
        | Google App Engine | 5196 ns/op | 1041 B/op | 20 allocs/op
@@ -128,7 +161,7 @@ Global Variable | Default Value | Description
 -----------------|---------------|-----------
 `DefaultLevel`  | `ErrorLevel` | Used when a Level is not present in a Context.
 `DefaultAppender` | `nil` | Used when an Appender is not present in a Context.
-`DefaultContext` | `context.Background()` | Used when a log method is invoked with a nil Context.
+`DefaultContext` | `gournal.Background()` | Used when a log method is invoked with a nil Context.
 
 Please note that there is no default value for `DefaultAppender`. If this
 field is not assigned and log function is invoked with a nil `Context` or one
@@ -152,40 +185,38 @@ logging frameworks in the same program:
 package main
 
 import (
-	"golang.org/x/net/context"
-
-	log "github.com/emccode/gournal"
-	glogrus "github.com/emccode/gournal/logrus"
-	gzap "github.com/emccode/gournal/zap"
+	"github.com/emccode/gournal"
+	"github.com/emccode/gournal/logrus"
+	"github.com/emccode/gournal/zap"
 )
 
 func main() {
 	// Make a Zap-based Appender the default appender for when one is not
 	// present in a Context, or when a nill Context is provided to a logging
 	// function.
-	log.DefaultAppender = gzap.New()
+	gournal.DefaultAppender = zap.New()
 
 	// The following call fails to provide a valid Context argument. In this
 	// case the DefaultAppender is used.
-	log.WithFields(map[string]interface{}{
+	gournal.WithFields(map[string]interface{}{
 		"size":     2,
 		"location": "Boston",
 	}).Error(nil, "Hello %s", "Bob")
 
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, log.LevelKey(), log.InfoLevel)
+	ctx := gournal.Background()
+	ctx = gournal.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
 
 	// Even though this next call provides a valid Context, there is no
 	// Appender present in the Context so the DefaultAppender will be used.
-	log.Info(ctx, "Hello %s", "Mary")
+	gournal.Info(ctx, "Hello %s", "Mary")
 
-	ctx = context.WithValue(ctx, log.AppenderKey(), glogrus.New())
+	ctx = gournal.WithValue(ctx, gournal.AppenderKey(), logrus.New())
 
 	// This last log function uses a Context that has been created with a
 	// Logrus Appender. Even though the DefaultAppender is assigned and is a
 	// Zap-based logger, this call will utilize the Context Appender instance,
 	// a Logrus Appender.
-	log.WithFields(map[string]interface{}{
+	gournal.WithFields(map[string]interface{}{
 		"size":     1,
 		"location": "Austin",
 	}).Warn(ctx, "Hello %s", "Alice")
@@ -214,20 +245,18 @@ below:
 package main
 
 import (
-	"golang.org/x/net/context"
-
-	log "github.com/emccode/gournal"
-	glogrus "github.com/emccode/gournal/logrus"
+	"github.com/emccode/gournal"
+	"github.com/emccode/gournal/logrus"
 )
 
 func main() {
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, log.LevelKey(), log.InfoLevel)
-	ctx = context.WithValue(ctx, log.AppenderKey(), glogrus.New())
+	ctx := gournal.Background()
+	ctx = gournal.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
+	ctx = gournal.WithValue(ctx, gournal.AppenderKey(), logrus.New())
 
-	ctx = context.WithValue(
+	ctx = gournal.WithValue(
 		ctx,
-		log.FieldsKey(),
+		gournal.FieldsKey(),
 		map[string]interface{}{
 			"name":  "Venus",
 			"color": 0x00ff00,
@@ -235,11 +264,11 @@ func main() {
 
 	// The following log entry will print the message and the name and color
 	// of the planet.
-	log.Info(ctx, "Discovered planet")
+	gournal.Info(ctx, "Discovered planet")
 
-	ctx = context.WithValue(
+	ctx = gournal.WithValue(
 		ctx,
-		log.FieldsKey(),
+		gournal.FieldsKey(),
 		func() map[string]interface{} {
 			return map[string]interface{}{
 				"galaxy":   "Milky Way",
@@ -249,16 +278,16 @@ func main() {
 
 	// The following log entry will print the message and the galactic location
 	// and distance of the planet.
-	log.Info(ctx, "Discovered planet")
+	gournal.Info(ctx, "Discovered planet")
 
 	// Create a Context with the FieldsKey that points to a function which
 	// returns a Context's derived fields based upon what data was provided
 	// to a the log function.
-	ctx = context.WithValue(
+	ctx = gournal.WithValue(
 		ctx,
-		log.FieldsKey(),
-		func(ctx context.Context,
-			lvl log.Level,
+		gournal.FieldsKey(),
+		func(ctx gournal.Context,
+			lvl gournal.Level,
 			fields map[string]interface{},
 			args ...interface{}) map[string]interface{} {
 
@@ -283,13 +312,13 @@ func main() {
 
 	// The following log entry will print the message and two-dimensional
 	// location information about the planet.
-	log.Info(ctx, "Discovered planet")
+	gournal.Info(ctx, "Discovered planet")
 
 	// This log entry, however, will print the message and the same location
 	// information, however, because the function used to derive the Context's
 	// fields inspects the field's "z-value" key, it will add that data to the
 	// location information, making it three-dimensional.
-	log.WithField("z-value", 3).Info(ctx, "Discovered planet")
+	gournal.WithField("z-value", 3).Info(ctx, "Discovered planet")
 }
 ```
 
@@ -316,10 +345,8 @@ package main
 import (
 	"fmt"
 
-	"golang.org/x/net/context"
-
-	log "github.com/emccode/gournal"
-	glogrus "github.com/emccode/gournal/logrus"
+	"github.com/emccode/gournal"
+	"github.com/emccode/gournal/logrus"
 )
 
 // myString is a custom type that has a custom fmt.Format function.
@@ -335,8 +362,8 @@ func (s myString) Format(f fmt.State, c rune) {
 }
 
 func main() {
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, log.AppenderKey(), glogrus.New())
+	ctx := gournal.Background()
+	ctx = gournal.WithValue(ctx, gournal.AppenderKey(), logrus.New())
 
 	counter := 0
 
@@ -351,7 +378,7 @@ func main() {
 		fmt.Println("* INVOKED CONTEXT FIELDS")
 		return map[string]interface{}{"counter": counter}
 	}
-	ctx = context.WithValue(ctx, log.FieldsKey(), getCtxFieldsFunc)
+	ctx = gournal.WithValue(ctx, gournal.FieldsKey(), getCtxFieldsFunc)
 
 	var name myString = "Bob"
 
@@ -361,13 +388,13 @@ func main() {
 	//
 	// Additionally, we should *not* see the messages produced by the
 	// myString.Format and getCtxFieldsFunc functions.
-	log.Info(ctx, "Hello %s", name)
+	gournal.Info(ctx, "Hello %s", name)
 
 	// Keep a reference to the context that has the original log level.
 	oldCtx := ctx
 
 	// Set the context's log level to be INFO.
-	ctx = context.WithValue(ctx, log.LevelKey(), log.InfoLevel)
+	ctx = gournal.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
 
 	// Note the log level has been changed to INFO. This is also a marker to
 	// show that the previous log and messages generated by the functions should
@@ -385,17 +412,17 @@ func main() {
 	// the messages from the myString.Format and getCtxFieldsFunc functions,
 	// but the field "size" from the getCtxFieldsFunc function should add the
 	// field "counter" to the fields provided directly to this call.
-	log.WithFields(fields).Info(ctx, "Hello %s", name)
+	gournal.WithFields(fields).Info(ctx, "Hello %s", name)
 
 	// Log "Hello Mary" again with the exact same info, except use the original
 	// context that did not have an explicit log level. Since the default log
 	// level is still ERROR, nothing will be emitted, not even the messages that
 	// indicate the myString.Format or getCtxFieldsFunc functions are being
 	// invoked.
-	log.WithFields(fields).Info(oldCtx, "Hello %s", name)
+	gournal.WithFields(fields).Info(oldCtx, "Hello %s", name)
 
 	// Update the default log level to INFO
-	log.DefaultLevel = log.InfoLevel
+	gournal.DefaultLevel = gournal.InfoLevel
 	fmt.Println("* DEFAULT LOG LEVEL INFO")
 
 	// Log "Hello Mary" again with the exact same info, even use the original
@@ -406,7 +433,7 @@ func main() {
 	//
 	// Note the counter value has only be incremented once since the function
 	// was not invoked when the log level did not permit the entry to be logged.
-	log.WithFields(fields).Info(oldCtx, "Hello %s", name)
+	gournal.WithFields(fields).Info(oldCtx, "Hello %s", name)
 }
 ```
 

@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/uber-go/zap"
-	"golang.org/x/net/context"
 
 	"github.com/emccode/gournal"
 )
@@ -28,7 +27,7 @@ func NewWithOptions(enc zap.Encoder, opts ...zap.Option) gournal.Appender {
 }
 
 func (a *appender) Append(
-	ctx context.Context,
+	ctx gournal.Context,
 	lvl gournal.Level,
 	fields map[string]interface{},
 	msg string) {

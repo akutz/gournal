@@ -5,13 +5,12 @@ import (
 	"os"
 	"testing"
 
-	"golang.org/x/net/context"
 	gaetest "google.golang.org/appengine/aetest"
 
 	"github.com/emccode/gournal"
 )
 
-var gaeCtx context.Context
+var gaeCtx gournal.Context
 
 func TestMain(m *testing.M) {
 
@@ -50,8 +49,8 @@ func TestGAEAppenderPanic(t *testing.T) {
 	gournal.Panic(ctx(), "Hello %s", "Bob")
 }
 
-func ctx() context.Context {
-	ctx := context.WithValue(gaeCtx, gournal.LevelKey(), gournal.InfoLevel)
-	ctx = context.WithValue(ctx, gournal.AppenderKey(), New())
+func ctx() gournal.Context {
+	ctx := gournal.WithValue(gaeCtx, gournal.LevelKey(), gournal.InfoLevel)
+	ctx = gournal.WithValue(ctx, gournal.AppenderKey(), New())
 	return ctx
 }

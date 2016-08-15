@@ -9,7 +9,6 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/uber-go/zap"
-	"golang.org/x/net/context"
 	gaetest "google.golang.org/appengine/aetest"
 	gae "google.golang.org/appengine/log"
 
@@ -20,7 +19,7 @@ import (
 	gzap "github.com/emccode/gournal/zap"
 )
 
-var gaeCtx context.Context
+var gaeCtx gournal.Context
 
 func TestMain(m *testing.M) {
 	gournal.DefaultLevel = gournal.DebugLevel
@@ -122,15 +121,15 @@ func BenchmarkGournalGAEWithFields(b *testing.B) {
 	benchmarkWithFields(b, ggae.New())
 }
 
-func newContext(a gournal.Appender) context.Context {
-	var ctx context.Context
+func newContext(a gournal.Appender) gournal.Context {
+	var ctx gournal.Context
 	if a == ggae.New() {
 		ctx = gaeCtx
 	} else {
-		ctx = context.Background()
+		ctx = gournal.Background()
 	}
-	ctx = context.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
-	ctx = context.WithValue(ctx, gournal.AppenderKey(), a)
+	ctx = gournal.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
+	ctx = gournal.WithValue(ctx, gournal.AppenderKey(), a)
 	return ctx
 }
 
