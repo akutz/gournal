@@ -9,12 +9,12 @@ import (
 
 func main() {
 	ctx := context.Background()
-	ctx = context.WithValue(ctx, log.LevelKey, log.InfoLevel)
-	ctx = context.WithValue(ctx, log.AppenderKey, glogrus.New())
+	ctx = context.WithValue(ctx, log.LevelKey(), log.InfoLevel)
+	ctx = context.WithValue(ctx, log.AppenderKey(), glogrus.New())
 
 	ctx = context.WithValue(
 		ctx,
-		log.FieldsKey,
+		log.FieldsKey(),
 		map[string]interface{}{
 			"name":  "Venus",
 			"color": 0x00ff00,
@@ -26,7 +26,7 @@ func main() {
 
 	ctx = context.WithValue(
 		ctx,
-		log.FieldsKey,
+		log.FieldsKey(),
 		func() map[string]interface{} {
 			return map[string]interface{}{
 				"galaxy":   "Milky Way",
@@ -43,7 +43,7 @@ func main() {
 	// to a the log function.
 	ctx = context.WithValue(
 		ctx,
-		log.FieldsKey,
+		log.FieldsKey(),
 		func(ctx context.Context,
 			lvl log.Level,
 			fields map[string]interface{},

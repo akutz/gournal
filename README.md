@@ -28,8 +28,8 @@ import (
 
 func main() {
 	ctx := context.Background()
-	ctx = context.WithValue(ctx, log.LevelKey, log.InfoLevel)
-	ctx = context.WithValue(ctx, log.AppenderKey, glogrus.New())
+	ctx = context.WithValue(ctx, log.LevelKey(), log.InfoLevel)
+	ctx = context.WithValue(ctx, log.AppenderKey(), glogrus.New())
 
 	log.Info(ctx, "Hello %s", "Bob")
 
@@ -71,24 +71,25 @@ framework.
 
 Benchmark | Logger | Time | Malloc Size | Malloc Count
 -----|--------|-----------|------|-------------|-------------
-Native without Fields | `log.Logger` | 1074 ns/op | 16 B/op | 1 allocs/op
-       | Logrus | 4202 ns/op | 832 B/op | 19 allocs/op
-       | Zap | 1328 ns/op | 0 B/op | 0 allocs/op
-       | Google App Engine | 1288 ns/op | 32 B/op | 1 allocs/op
-Gournal without Fields | `log.Logger` | 1237 ns/op | 16 B/op | 1 allocs/op
-       | Logrus | 3701 ns/op | 832 B/op | 19 allocs/op
-       | Zap | 1606 ns/op | 0 B/op | 0 allocs/op
-       | Google App Engine | 1571 ns/op | 32 B/op | 1 allocs/op
-Gournal with Fields | `log.Logger` | 4847 ns/op | 881 B/op | 18 allocs/op
-       | Logrus | 5488 ns/op | 1746 B/op | 31 allocs/op
-       | Zap | 2967 ns/op | 641 B/op | 8 allocs/op
-       | Google App Engine | 4428 ns/op | 1041 B/op | 20 allocs/op
+Native without Fields | `log.Logger` | 1024 ns/op | 16 B/op | 1 allocs/op
+       | Logrus | 4118 ns/op | 832 B/op | 19 allocs/op
+       | Zap | 1347 ns/op | 0 B/op | 0 allocs/op
+       | Google App Engine | 1302 ns/op | 32 B/op | 1 allocs/op
+Gournal without Fields | `log.Logger` | 1230 ns/op | 16 B/op | 1 allocs/op
+       | Logrus | 3784 ns/op | 832 B/op | 19 allocs/op
+       | Zap | 1448 ns/op | 0 B/op | 0 allocs/op
+       | Google App Engine | 1641 ns/op | 32 B/op | 1 allocs/op
+Gournal with Fields | `log.Logger` | 4424 ns/op | 881 B/op | 18 allocs/op
+       | Logrus | 6467 ns/op | 1746 B/op | 31 allocs/op
+       | Zap | 3160 ns/op | 641 B/op | 8 allocs/op
+       | Google App Engine | 5196 ns/op | 1041 B/op | 20 allocs/op
 
 The above benchmark information (results may vary) was generated using the
 following command:
 
 ```bash
 $ make benchmark
+GOOS=darwin GOARCH=amd64 go install .
 GOOS=darwin GOARCH=amd64 go install ./gae
 GOOS=darwin GOARCH=amd64 go install ./logrus
 GOOS=darwin GOARCH=amd64 go install ./stdlib
@@ -97,20 +98,19 @@ GOOS=darwin GOARCH=amd64 go install ./zap
 warning: no packages being tested depend on github.com/emccode/gournal
 benchmarks/benchmarks.test -test.run Benchmark -test.bench . -test.benchmem 2> /dev/null
 PASS
-BenchmarkNativeStdLibWithoutFields-8 	 1000000	      1074 ns/op	      16 B/op	       1 allocs/op
-BenchmarkNativeLogrusWithoutFields-8 	  300000	      4202 ns/op	     832 B/op	      19 allocs/op
-BenchmarkNativeZapWithoutFields-8    	 1000000	      1328 ns/op	       0 B/op	       0 allocs/op
-BenchmarkNativeGAEWithoutFields-8    	 1000000	      1288 ns/op	      32 B/op	       1 allocs/op
-BenchmarkGournalStdLibWithoutFields-8	 1000000	      1237 ns/op	      16 B/op	       1 allocs/op
-BenchmarkGournalLogrusWithoutFields-8	  300000	      3701 ns/op	     832 B/op	      19 allocs/op
-BenchmarkGournalZapWithoutFields-8   	 1000000	      1606 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGournalGAEWithoutFields-8   	 1000000	      1571 ns/op	      32 B/op	       1 allocs/op
-BenchmarkGournalStdLibWithFields-8   	  300000	      4847 ns/op	     881 B/op	      18 allocs/op
-BenchmarkGournalLogrusWithFields-8   	  200000	      5488 ns/op	    1746 B/op	      31 allocs/op
-BenchmarkGournalZapWithFields-8      	  500000	      2967 ns/op	     641 B/op	       8 allocs/op
-BenchmarkGournalGAEWithFields-8      	  300000	      4428 ns/op	    1041 B/op	      20 allocs/op
-coverage: 20.6% of statements in github.com/emccode/gournal
-
+BenchmarkNativeStdLibWithoutFields-8 	 1000000	      1024 ns/op	      16 B/op	       1 allocs/op
+BenchmarkNativeLogrusWithoutFields-8 	  300000	      4118 ns/op	     832 B/op	      19 allocs/op
+BenchmarkNativeZapWithoutFields-8    	 1000000	      1347 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNativeGAEWithoutFields-8    	 1000000	      1302 ns/op	      32 B/op	       1 allocs/op
+BenchmarkGournalStdLibWithoutFields-8	 1000000	      1230 ns/op	      16 B/op	       1 allocs/op
+BenchmarkGournalLogrusWithoutFields-8	  500000	      3784 ns/op	     832 B/op	      19 allocs/op
+BenchmarkGournalZapWithoutFields-8   	 1000000	      1448 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGournalGAEWithoutFields-8   	 1000000	      1641 ns/op	      32 B/op	       1 allocs/op
+BenchmarkGournalStdLibWithFields-8   	  300000	      4424 ns/op	     881 B/op	      18 allocs/op
+BenchmarkGournalLogrusWithFields-8   	  300000	      6467 ns/op	    1745 B/op	      31 allocs/op
+BenchmarkGournalZapWithFields-8      	  500000	      3160 ns/op	     641 B/op	       8 allocs/op
+BenchmarkGournalGAEWithFields-8      	  300000	      5196 ns/op	    1041 B/op	      20 allocs/op
+coverage: 21.6% of statements in github.com/emccode/gournal
 ```
 
 Please keep in mind that the above results will vary based upon the version of
@@ -173,13 +173,13 @@ func main() {
 	}).Error(nil, "Hello %s", "Bob")
 
 	ctx := context.Background()
-	ctx = context.WithValue(ctx, log.LevelKey, log.InfoLevel)
+	ctx = context.WithValue(ctx, log.LevelKey(), log.InfoLevel)
 
 	// Even though this next call provides a valid Context, there is no
 	// Appender present in the Context so the DefaultAppender will be used.
 	log.Info(ctx, "Hello %s", "Mary")
 
-	ctx = context.WithValue(ctx, log.AppenderKey, glogrus.New())
+	ctx = context.WithValue(ctx, log.AppenderKey(), glogrus.New())
 
 	// This last log function uses a Context that has been created with a
 	// Logrus Appender. Even though the DefaultAppender is assigned and is a
@@ -222,12 +222,12 @@ import (
 
 func main() {
 	ctx := context.Background()
-	ctx = context.WithValue(ctx, log.LevelKey, log.InfoLevel)
-	ctx = context.WithValue(ctx, log.AppenderKey, glogrus.New())
+	ctx = context.WithValue(ctx, log.LevelKey(), log.InfoLevel)
+	ctx = context.WithValue(ctx, log.AppenderKey(), glogrus.New())
 
 	ctx = context.WithValue(
 		ctx,
-		log.FieldsKey,
+		log.FieldsKey(),
 		map[string]interface{}{
 			"name":  "Venus",
 			"color": 0x00ff00,
@@ -239,7 +239,7 @@ func main() {
 
 	ctx = context.WithValue(
 		ctx,
-		log.FieldsKey,
+		log.FieldsKey(),
 		func() map[string]interface{} {
 			return map[string]interface{}{
 				"galaxy":   "Milky Way",
@@ -256,7 +256,7 @@ func main() {
 	// to a the log function.
 	ctx = context.WithValue(
 		ctx,
-		log.FieldsKey,
+		log.FieldsKey(),
 		func(ctx context.Context,
 			lvl log.Level,
 			fields map[string]interface{},
@@ -336,7 +336,7 @@ func (s myString) Format(f fmt.State, c rune) {
 
 func main() {
 	ctx := context.Background()
-	ctx = context.WithValue(ctx, log.AppenderKey, glogrus.New())
+	ctx = context.WithValue(ctx, log.AppenderKey(), glogrus.New())
 
 	counter := 0
 
@@ -351,7 +351,7 @@ func main() {
 		fmt.Println("* INVOKED CONTEXT FIELDS")
 		return map[string]interface{}{"counter": counter}
 	}
-	ctx = context.WithValue(ctx, log.FieldsKey, getCtxFieldsFunc)
+	ctx = context.WithValue(ctx, log.FieldsKey(), getCtxFieldsFunc)
 
 	var name myString = "Bob"
 
@@ -367,7 +367,7 @@ func main() {
 	oldCtx := ctx
 
 	// Set the context's log level to be INFO.
-	ctx = context.WithValue(ctx, log.LevelKey, log.InfoLevel)
+	ctx = context.WithValue(ctx, log.LevelKey(), log.InfoLevel)
 
 	// Note the log level has been changed to INFO. This is also a marker to
 	// show that the previous log and messages generated by the functions should

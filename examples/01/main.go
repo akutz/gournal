@@ -9,8 +9,8 @@ import (
 
 func main() {
 	ctx := context.Background()
-	ctx = context.WithValue(ctx, log.LevelKey, log.InfoLevel)
-	ctx = context.WithValue(ctx, log.AppenderKey, glogrus.New())
+	ctx = context.WithValue(ctx, log.LevelKey(), log.InfoLevel)
+	ctx = context.WithValue(ctx, log.AppenderKey(), glogrus.New())
 
 	log.Info(ctx, "Hello %s", "Bob")
 
