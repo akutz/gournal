@@ -1,6 +1,7 @@
-package gournal
+package benchmarks
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"testing"
@@ -9,6 +10,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/uber-go/zap"
 	"golang.org/x/net/context"
+	gaetest "google.golang.org/appengine/aetest"
 	gae "google.golang.org/appengine/log"
 
 	"github.com/emccode/gournal"
@@ -18,12 +20,33 @@ import (
 	gzap "github.com/emccode/gournal/zap"
 )
 
+var gaeCtx context.Context
+
+func TestMain(m *testing.M) {
+	gournal.DefaultLevel = gournal.DebugLevel
+
+	var (
+		err  error
+		done func()
+	)
+
+	if gaeCtx, done, err = gaetest.NewContext(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	ec := m.Run()
+
+	done()
+	os.Exit(ec)
+}
+
 func BenchmarkNativeStdLibWithoutFields(b *testing.B) {
 	l := log.New(os.Stderr, "", log.LstdFlags)
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			l.Println("Run Barry, run.")
+			l.Printf("Run Barry, run.")
 		}
 	})
 }
@@ -37,7 +60,7 @@ func BenchmarkNativeLogrusWithoutFields(b *testing.B) {
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			l.Println("Run Barry, run.")
+			l.Printf("Run Barry, run.")
 		}
 	})
 }

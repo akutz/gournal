@@ -48,9 +48,9 @@ func (a *appender) Append(
 	}
 
 	if len(fields) == 0 {
-		logf("[%s] %s\n", lvl, msg)
+		logf(msg)
 		return
 	}
 
-	logf("[%s] %s %v\n", lvl, msg, fields)
+	logf(msg, fields)
 }
