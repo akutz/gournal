@@ -129,8 +129,8 @@ func newContext(a gournal.Appender) context.Context {
 	} else {
 		ctx = context.Background()
 	}
-	ctx = context.WithValue(ctx, gournal.LevelKey, gournal.InfoLevel)
-	ctx = context.WithValue(ctx, gournal.AppenderKey, a)
+	ctx = context.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
+	ctx = context.WithValue(ctx, gournal.AppenderKey(), a)
 	return ctx
 }
 

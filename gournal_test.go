@@ -28,6 +28,23 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+func TestContextKeys(t *testing.T) {
+	ctx := context.Background()
+	a := NewAppender()
+	ctx1 := context.WithValue(ctx, appenderKey, a)
+	ctx2 := context.WithValue(ctx, appenderKeyC, a)
+	ctx3 := context.WithValue(ctx, AppenderKey(), a)
+	assert.Equal(t, a, ctx1.Value(appenderKey))
+	assert.Equal(t, a, ctx1.Value(appenderKeyC))
+	assert.Equal(t, a, ctx1.Value(AppenderKey()))
+	assert.Equal(t, a, ctx2.Value(appenderKey))
+	assert.Equal(t, a, ctx2.Value(appenderKeyC))
+	assert.Equal(t, a, ctx2.Value(AppenderKey()))
+	assert.Equal(t, a, ctx3.Value(appenderKey))
+	assert.Equal(t, a, ctx3.Value(appenderKeyC))
+	assert.Equal(t, a, ctx3.Value(AppenderKey()))
+}
+
 func TestParseLevelTransformations(t *testing.T) {
 	for lvl := UnknownLevel; lvl < levelCount; lvl++ {
 		s := lvl.String()
@@ -40,11 +57,11 @@ func TestParseLevelTransformations(t *testing.T) {
 
 func TestChildContextLevelLog(t *testing.T) {
 	buf, ctx := newTestContext()
-	ctx = context.WithValue(ctx, levelKey, ErrorLevel)
+	ctx = context.WithValue(ctx, LevelKey(), ErrorLevel)
 	Info(ctx, "Hello %s", "Bob")
 	assert.Zero(t, buf.Len())
 
-	ctx = context.WithValue(ctx, levelKey, DebugLevel)
+	ctx = context.WithValue(ctx, LevelKey(), DebugLevel)
 	Debug(ctx, "Hello %s", "Alice")
 	assert.Equal(t, "[DEBUG] Hello Alice\n", buf.String())
 }
@@ -52,7 +69,7 @@ func TestChildContextLevelLog(t *testing.T) {
 func TestContextFieldsMap(t *testing.T) {
 	buf, ctx := newTestContext()
 
-	ctx = context.WithValue(ctx, fieldsKey, map[string]interface{}{
+	ctx = context.WithValue(ctx, FieldsKey(), map[string]interface{}{
 		"point": struct {
 			x int
 			y int
@@ -75,7 +92,7 @@ func TestContextFieldsFunc(t *testing.T) {
 			}{1, -1},
 		}
 	}
-	ctx = context.WithValue(ctx, fieldsKey, ctxFieldsFunc)
+	ctx = context.WithValue(ctx, FieldsKey(), ctxFieldsFunc)
 
 	Info(ctx, "Discovered planet")
 	assert.Equal(
@@ -109,7 +126,7 @@ func TestContextFieldsFuncEx(t *testing.T) {
 			}{1, -1},
 		}
 	}
-	ctx = context.WithValue(ctx, fieldsKey, ctxFieldsFunc)
+	ctx = context.WithValue(ctx, FieldsKey(), ctxFieldsFunc)
 	ctxLogger := New(ctx)
 
 	Info(ctx, "Discovered planet")
@@ -174,7 +191,7 @@ func TestAppendWithContextDebugLevel(t *testing.T) {
 }
 
 func testAppendWithContextXYZLevel(t *testing.T, lvl Level) {
-	ctx := context.WithValue(context.Background(), levelKey, lvl)
+	ctx := context.WithValue(context.Background(), LevelKey(), lvl)
 	lvlStr := lvl.String()
 	lvlStr = fmt.Sprintf("%c%s", lvlStr[0], strings.ToLower(lvlStr[1:]))
 	name := fmt.Sprintf("TestAppendWithContext%sLevel", lvlStr)
@@ -308,8 +325,8 @@ func runLoggerTests(
 			DefaultAppender = appndr
 			DefaultLevel = testFatalLvl
 		} else {
-			ctx = context.WithValue(ctx, appenderKey, appndr)
-			ctx = context.WithValue(ctx, levelKey, testFatalLvl)
+			ctx = context.WithValue(ctx, AppenderKey(), appndr)
+			ctx = context.WithValue(ctx, LevelKey(), testFatalLvl)
 		}
 		if len(testFatalFields) > 0 {
 			fields = map[string]interface{}{}
@@ -332,7 +349,7 @@ func runLoggerTests(
 	if ctx == nil {
 		DefaultAppender = appndr
 	} else {
-		ctx = context.WithValue(ctx, appenderKey, appndr)
+		ctx = context.WithValue(ctx, AppenderKey(), appndr)
 	}
 
 	for lvl := DebugLevel; lvl >= PanicLevel; lvl-- {
@@ -442,5 +459,5 @@ func runLoggerTests(
 func newTestContext() (*bytes.Buffer, context.Context) {
 	w := &bytes.Buffer{}
 	a := NewAppenderWithOptions(w)
-	return w, context.WithValue(context.Background(), appenderKey, a)
+	return w, context.WithValue(context.Background(), AppenderKey(), a)
 }

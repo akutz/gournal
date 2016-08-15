@@ -41,7 +41,7 @@ func TestLogrusAppenderPanic(t *testing.T) {
 
 func ctx() context.Context {
 	ctx := context.Background()
-	ctx = context.WithValue(ctx, gournal.LevelKey, gournal.InfoLevel)
-	ctx = context.WithValue(ctx, gournal.AppenderKey, New())
+	ctx = context.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
+	ctx = context.WithValue(ctx, gournal.AppenderKey(), New())
 	return ctx
 }

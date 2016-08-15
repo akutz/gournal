@@ -40,44 +40,46 @@ var (
 	DefaultContext = context.Background()
 )
 
-// Key is the type used by this package's constant values that can be provided
-// to the GetContextKey function to retrieve the corresponding context key.
-type Key uint8
+type contextKey uint8
 
 const (
-	// LevelKey is the key for storing the log Level constant in a Context.
-	LevelKey Key = iota
-
-	// FieldsKey is the key used to store/retrieve the Context-specific field
-	// data to append with each log entry. Three different types of data are
-	// inspected for this context key:
-	//
-	//     * map[string]interface{}
-	//
-	//     * func() map[string]interface{}
-	//
-	//     * func(ctx context.Cotext,
-	//            lvl Level,
-	//            fields map[string]interface{},
-	//            msg string) map[string]interface{}
-	FieldsKey
-
-	// AppenderKey is the key for storing the implementation of the Appender
-	// interface in a Context.
-	AppenderKey
+	levelKeyC contextKey = iota
+	fieldsKeyC
+	appenderKeyC
 )
 
 var (
-	levelKey    = interface{}(LevelKey)
-	fieldsKey   = interface{}(FieldsKey)
-	appenderKey = interface{}(AppenderKey)
-
-	contextKeys = []interface{}{levelKey, fieldsKey, appenderKey}
+	levelKey    interface{} = levelKeyC
+	fieldsKey   interface{} = fieldsKeyC
+	appenderKey interface{} = appenderKeyC
 )
 
-// GetContextKey returns the context key for the provided Gournal key.
-func GetContextKey(k Key) interface{} {
-	return contextKeys[k]
+// LevelKey returns the Context key used for storing and retrieving the log
+// level.
+func LevelKey() interface{} {
+	return levelKey
+}
+
+// FieldsKey returns the Context key for storing and retrieving Context-specific
+// data that is appended along with each log entry. Three different types of
+// data are inspected for this context key:
+//
+//     * map[string]interface{}
+//
+//     * func() map[string]interface{}
+//
+//     * func(ctx context.Cotext,
+//            lvl Level,
+//            fields map[string]interface{},
+//            msg string) map[string]interface{}
+func FieldsKey() interface{} {
+	return fieldsKey
+}
+
+// AppenderKey returns the Context key for storing and retrieving an Appender
+// object.
+func AppenderKey() interface{} {
+	return appenderKey
 }
 
 // Level is a log level.

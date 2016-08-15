@@ -22,13 +22,13 @@ func main() {
 	}).Error(nil, "Hello %s", "Bob")
 
 	ctx := context.Background()
-	ctx = context.WithValue(ctx, log.LevelKey, log.InfoLevel)
+	ctx = context.WithValue(ctx, log.LevelKey(), log.InfoLevel)
 
 	// Even though this next call provides a valid Context, there is no
 	// Appender present in the Context so the DefaultAppender will be used.
 	log.Info(ctx, "Hello %s", "Mary")
 
-	ctx = context.WithValue(ctx, log.AppenderKey, glogrus.New())
+	ctx = context.WithValue(ctx, log.AppenderKey(), glogrus.New())
 
 	// This last log function uses a Context that has been created with a
 	// Logrus Appender. Even though the DefaultAppender is assigned and is a
