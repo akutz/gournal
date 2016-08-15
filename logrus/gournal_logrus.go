@@ -36,18 +36,36 @@ func (a *appender) Append(
 	fields map[string]interface{},
 	msg string) {
 
+	if len(fields) == 0 {
+		switch lvl {
+		case gournal.DebugLevel:
+			a.logger.Debugf(msg)
+		case gournal.InfoLevel:
+			a.logger.Infof(msg)
+		case gournal.WarnLevel:
+			a.logger.Warnf(msg)
+		case gournal.ErrorLevel:
+			a.logger.Errorf(msg)
+		case gournal.FatalLevel:
+			a.logger.Fatalf(msg)
+		case gournal.PanicLevel:
+			a.logger.Panicf(msg)
+		}
+		return
+	}
+
 	switch lvl {
 	case gournal.DebugLevel:
-		a.logger.WithFields(fields).Debug(msg)
+		a.logger.WithFields(fields).Debugf(msg)
 	case gournal.InfoLevel:
-		a.logger.WithFields(fields).Info(msg)
+		a.logger.WithFields(fields).Infof(msg)
 	case gournal.WarnLevel:
-		a.logger.WithFields(fields).Warn(msg)
+		a.logger.WithFields(fields).Warnf(msg)
 	case gournal.ErrorLevel:
-		a.logger.WithFields(fields).Error(msg)
+		a.logger.WithFields(fields).Errorf(msg)
 	case gournal.FatalLevel:
-		a.logger.WithFields(fields).Fatal(msg)
+		a.logger.WithFields(fields).Fatalf(msg)
 	case gournal.PanicLevel:
-		a.logger.WithFields(fields).Panic(msg)
+		a.logger.WithFields(fields).Panicf(msg)
 	}
 }

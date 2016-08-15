@@ -1,1 +1,0 @@
-TEST_COVERPKG_./tests := $(ROOT_IMPORT_PATH)

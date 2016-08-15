@@ -558,7 +558,7 @@ GO_DEPS += .coverage.tools.d
 ################################################################################
 ##                                BENCHMARKS                                  ##
 ################################################################################
-benchmark: ./tests/gournal.test
+benchmark: ./benchmarks/benchmarks.test
 	$? -test.run Benchmark -test.bench . -test.benchmem 2> /dev/null
 
 
