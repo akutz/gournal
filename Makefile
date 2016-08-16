@@ -59,7 +59,7 @@ else
 GOVERSION := $(shell go version | awk '{print $$3}' | cut -c3-)
 endif
 
-ifeq (1.6.3,$(TRAVIS_GO_VERSION))
+ifeq (1.7,$(TRAVIS_GO_VERSION))
 ifeq (linux,$(TRAVIS_OS_NAME))
 COVERAGE_ENABLED := 1
 endif
@@ -585,6 +585,7 @@ run-examples:
 	@echo EXAMPLE 1 && $(MAKE) run-example-1 && echo
 	@echo EXAMPLE 2 && $(MAKE) run-example-2 && echo
 	@echo EXAMPLE 3 && $(MAKE) run-example-3 && echo
+	@echo EXAMPLE 4 && $(MAKE) run-example-4 && echo
 
 
 ################################################################################
