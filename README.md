@@ -1,4 +1,4 @@
-# Gournal [![GoDoc](https://godoc.org/github.com/emccode/gournal?status.svg)](https://godoc.org/github.com/emccode/gournal) [![Build Status](https://travis-ci.org/emccode/gournal.svg?branch=master)](https://travis-ci.org/emccode/gournal) [![Go Report Card](https://goreportcard.com/badge/github.com/emccode/gournal)](https://goreportcard.com/report/github.com/emccode/gournal) [![codecov](https://codecov.io/gh/emccode/gournal/branch/master/graph/badge.svg)](https://codecov.io/gh/emccode/gournal)
+# Gournal [![GoDoc](https://godoc.org/github.com/codedellemc/gournal?status.svg)](https://godoc.org/github.com/codedellemc/gournal) [![Build Status](https://travis-ci.org/emccode/gournal.svg?branch=master)](https://travis-ci.org/emccode/gournal) [![Go Report Card](https://goreportcard.com/badge/github.com/codedellemc/gournal)](https://goreportcard.com/report/github.com/codedellemc/gournal) [![codecov](https://codecov.io/gh/emccode/gournal/branch/master/graph/badge.svg)](https://codecov.io/gh/emccode/gournal)
 Gournal (pronounced "Journal") is a Context-aware logging framework
 that introduces the Google [Context type](https://bgournal.golang.org/context) as
 a first-class parameter to all common log functions such as Info, Debug, etc.
@@ -12,7 +12,7 @@ favorite logger, rather existing logging frameworks such as
 easily participate as a Gournal Appender.
 
 The following
-[example](https://github.com/emccode/gournal/tree/master/examples/01/main.go)
+[example](https://github.com/codedellemc/gournal/tree/master/examples/01/main.go)
 is a simple program that uses Logrus as a Gournal Appender to emit some log
 data:
 
@@ -20,8 +20,8 @@ data:
 package main
 
 import (
-	"github.com/emccode/gournal"
-	"github.com/emccode/gournal/logrus"
+	"github.com/codedellemc/gournal"
+	"github.com/codedellemc/gournal/logrus"
 )
 
 func main() {
@@ -85,11 +85,11 @@ inherits one of the former.
 ## Compatability
 Gournal provides ready-to-use Appenders for the following logging frameworks:
 
-  * [Logrus](https://github.com/emccode/gournal/tree/master/logrus)
-  * [Zap](https://github.com/emccode/gournal/tree/master/zap)
-  * [Google App Engine](https://github.com/emccode/gournal/tree/master/gae)
-  * [`gournal.Logger`](https://github.com/emccode/gournal/tree/master/stdlib)
-  * [`io.Writer`](https://github.com/emccode/gournal/tree/master/iowriter)
+  * [Logrus](https://github.com/codedellemc/gournal/tree/master/logrus)
+  * [Zap](https://github.com/codedellemc/gournal/tree/master/zap)
+  * [Google App Engine](https://github.com/codedellemc/gournal/tree/master/gae)
+  * [`gournal.Logger`](https://github.com/codedellemc/gournal/tree/master/stdlib)
+  * [`io.Writer`](https://github.com/codedellemc/gournal/tree/master/iowriter)
 
 With little overhead, Gournal leverages the Google Context type to provide an
 elegant solution to the absence of features that are commonly found in
@@ -127,8 +127,8 @@ GOOS=darwin GOARCH=amd64 go install ./gae
 GOOS=darwin GOARCH=amd64 go install ./logrus
 GOOS=darwin GOARCH=amd64 go install ./stdlib
 GOOS=darwin GOARCH=amd64 go install ./zap
-./.gaesdk/1.9.40/go_appengine/goapp test -cover -coverpkg 'github.com/emccode/gournal' -c -o benchmarks/benchmarks.test ./benchmarks
-warning: no packages being tested depend on github.com/emccode/gournal
+./.gaesdk/1.9.40/go_appengine/goapp test -cover -coverpkg 'github.com/codedellemc/gournal' -c -o benchmarks/benchmarks.test ./benchmarks
+warning: no packages being tested depend on github.com/codedellemc/gournal
 benchmarks/benchmarks.test -test.run Benchmark -test.bench . -test.benchmem 2> /dev/null
 PASS
 BenchmarkNativeStdLibWithoutFields-8 	 1000000	      1024 ns/op	      16 B/op	       1 allocs/op
@@ -143,7 +143,7 @@ BenchmarkGournalStdLibWithFields-8   	  300000	      4424 ns/op	     881 B/op	  
 BenchmarkGournalLogrusWithFields-8   	  300000	      6467 ns/op	    1745 B/op	      31 allocs/op
 BenchmarkGournalZapWithFields-8      	  500000	      3160 ns/op	     641 B/op	       8 allocs/op
 BenchmarkGournalGAEWithFields-8      	  300000	      5196 ns/op	    1041 B/op	      20 allocs/op
-coverage: 21.6% of statements in github.com/emccode/gournal
+coverage: 21.6% of statements in github.com/codedellemc/gournal
 ```
 
 Please keep in mind that the above results will vary based upon the version of
@@ -177,7 +177,7 @@ that is doing the actual logging:
 
 ### Concurrent Logging Frameworks
 The following
-[example](https://github.com/emccode/gournal/tree/master/examples/02/main.go)
+[example](https://github.com/codedellemc/gournal/tree/master/examples/02/main.go)
 illustrates how to utilize the Gournal `DefaultAppender` as well as multiple
 logging frameworks in the same program:
 
@@ -185,9 +185,9 @@ logging frameworks in the same program:
 package main
 
 import (
-	"github.com/emccode/gournal"
-	"github.com/emccode/gournal/logrus"
-	"github.com/emccode/gournal/zap"
+	"github.com/codedellemc/gournal"
+	"github.com/codedellemc/gournal/logrus"
+	"github.com/codedellemc/gournal/zap"
 )
 
 func main() {
@@ -238,15 +238,15 @@ Another nifty feature of Gournal is the ability to provide a Context with
 fields that will get emitted along-side every log message, whether they are
 explicitly provided with log message or not. This feature is illustrated
 in the
-[example](https://github.com/emccode/gournal/tree/master/examples/03/main.go)
+[example](https://github.com/codedellemc/gournal/tree/master/examples/03/main.go)
 below:
 
 ```go
 package main
 
 import (
-	"github.com/emccode/gournal"
-	"github.com/emccode/gournal/logrus"
+	"github.com/codedellemc/gournal"
+	"github.com/codedellemc/gournal/logrus"
 )
 
 func main() {
@@ -345,8 +345,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/emccode/gournal"
-	"github.com/emccode/gournal/logrus"
+	"github.com/codedellemc/gournal"
+	"github.com/codedellemc/gournal/logrus"
 )
 
 // myString is a custom type that has a custom fmt.Format function.

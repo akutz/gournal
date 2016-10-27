@@ -6,7 +6,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/emccode/gournal"
+	"github.com/codedellemc/gournal"
 )
 
 func TestLogrusAppenderNoFields(t *testing.T) {

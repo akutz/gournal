@@ -1,3 +1,6 @@
+*.*-e
+.*-e
+*-e
 vendor/
 .build/
 .rpmbuild/

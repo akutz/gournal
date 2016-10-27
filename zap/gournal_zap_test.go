@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/emccode/gournal"
+	"github.com/codedellemc/gournal"
 )
 
 func TestZapAppenderNoFields(t *testing.T) {

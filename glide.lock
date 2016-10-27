@@ -1,36 +1,48 @@
-hash: 5d4fb9ec67324087909cc09f86d835f828131853baa6d2f29ac8d76b3fcdd9d2
-updated: 2016-08-08T01:36:31.76546933-05:00
+hash: 8fd76425f72074620e4ade0f82b4dd42d9743826cca58bd5484cf87ef5018f39
+updated: 2016-10-27T12:40:13.905438564-05:00
 imports:
 - name: github.com/golang/protobuf
-  version: c3cefd437628a0b7d31b34fe44b3a7a540e98527
+  version: 98fa357170587e470c5f27d3c3ea0947b71eb455
   subpackages:
   - proto
 - name: github.com/Sirupsen/logrus
-  version: a283a10442df8dc09befd873fab202bf8a253d6a
+  version: 3ec0642a7fb6488f65b06f9040adc67e3990296a
 - name: github.com/stretchr/testify
-  version: d77da356e56a7428ad25149ca77381849a6a5232
+  version: 976c720a22c8eb4eb6a0b4348ad85ad12491a506
+  subpackages:
+  - assert
 - name: github.com/uber-go/atomic
-  version: 0c9e689d64f004564b79d9a663634756df322902
+  version: 9e99152552a6ce13fa3b2ce4a9c4fb117cca4506
 - name: github.com/uber-go/zap
-  version: f6059af9adb56642e6cb2a91051feb930eba6342
+  version: f2929c57adb5be8fb03cad9a6912c509a5cb60af
 - name: golang.org/x/net
-  version: 7c62cfdcccc65f87b0120ec841012ba816fc1aec
+  version: b626cca987fa6333e5dd25baa0fd61708c145011
   subpackages:
   - context
 - name: golang.org/x/sys
-  version: a646d33e2ee3172a661fc09bca23bb4889a41bc8
+  version: 002cbb5f952456d0c50e0d2aff17ea5eca716979
   subpackages:
   - unix
 - name: google.golang.org/appengine
-  version: f21d98e7aefbf9ff4d5eeba05d7a925cc7ac20c3
+  version: 46239ca616842c00f41b8cbc6bbf2bd6ffbfcdad
   subpackages:
-  - log
   - aetest
   - internal
-  - internal/log
   - internal/app_identity
-  - internal/modules
   - internal/base
   - internal/datastore
+  - internal/log
+  - internal/modules
   - internal/remote_api
-devImports: []
+  - internal/user
+  - log
+  - user
+testImports:
+- name: github.com/davecgh/go-spew
+  version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
+  subpackages:
+  - spew
+- name: github.com/pmezard/go-difflib
+  version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
+  subpackages:
+  - difflib

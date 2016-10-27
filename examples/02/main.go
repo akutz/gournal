@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/emccode/gournal"
-	"github.com/emccode/gournal/logrus"
-	"github.com/emccode/gournal/zap"
+	"github.com/codedellemc/gournal"
+	"github.com/codedellemc/gournal/logrus"
+	"github.com/codedellemc/gournal/zap"
 )
 
 func main() {
