@@ -1,8 +1,7 @@
-go_import_path: github.com/emccode/gournal
+go_import_path: github.com/codedellemc/gournal
 
 language: go
 go:
-  - 1.5.4
   - 1.6.3
   - 1.7
   - tip

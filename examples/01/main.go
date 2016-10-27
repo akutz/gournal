@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/emccode/gournal"
-	"github.com/emccode/gournal/logrus"
+	"github.com/codedellemc/gournal"
+	"github.com/codedellemc/gournal/logrus"
 )
 
 func main() {
