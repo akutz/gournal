@@ -3,25 +3,26 @@ go_import_path: github.com/thecodeteam/gournal
 language: go
 go:
   - 1.8.3
-  - 1.9
+  - 1.9.1
 
 os:
   - linux
 
-before_install:
-  - git config --global 'url.https://gopkg.in/yaml.v1.insteadof' 'https://gopkg.in/yaml.v1/'
-  - git config --global 'url.https://gopkg.in/yaml.v2.insteadof' 'https://gopkg.in/yaml.v2/'
-  - git config --global 'url.https://gopkg.in/fsnotify.v1.insteadof' 'https://gopkg.in/fsnotify.v1/'
-  - git config --global 'url.https://github.com/.insteadof' 'git://github.com/'
-  - git config --global 'url.https://github.com/.insteadof' 'git@github.com:'
-  - make info
-  - make deps
+install: true
 
 script:
-  - make -j build
-  - make -j test
+  - go build -o ex01 ./examples/01
+  - go build -o ex02 ./examples/02
+  - go build -o ex03 ./examples/03
+  - go build -o ex04 ./examples/04
+  - go test .
+  - go test ./logrus
+  - go test ./stdlib
+  - go test ./zap
+  - go test ./benchmarks -bench . -benchmem 2> /dev/null
 
 after_success:
-  - make -j cover
-  - make benchmark
-  - make run-examples
+  - ./ex01
+  - ./ex02
+  - ./ex03
+  - ./ex04
