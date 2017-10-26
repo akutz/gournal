@@ -7,7 +7,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/codedellemc/gournal"
+	"github.com/thecodeteam/gournal"
 )
 
 type appender struct {

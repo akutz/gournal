@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/codedellemc/gournal"
+	"github.com/thecodeteam/gournal"
 )
 
 // New returns a stdlib logger that implements the Gournal Appender interface.

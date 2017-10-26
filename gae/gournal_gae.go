@@ -9,7 +9,7 @@ import (
 
 	gae "google.golang.org/appengine/log"
 
-	"github.com/codedellemc/gournal"
+	"github.com/thecodeteam/gournal"
 )
 
 type appender int

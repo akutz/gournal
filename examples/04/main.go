@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/codedellemc/gournal"
-	"github.com/codedellemc/gournal/logrus"
+	"github.com/thecodeteam/gournal"
+	"github.com/thecodeteam/gournal/logrus"
 )
 
 // myString is a custom type that has a custom fmt.Format function.
