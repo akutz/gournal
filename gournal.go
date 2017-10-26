@@ -16,6 +16,7 @@ to the project's README file or https://github.com/thecodeteam/gournal.
 package gournal
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strconv"
@@ -35,7 +36,7 @@ var (
 	DefaultAppender = NewAppender()
 
 	// DefaultContext is used when a log method is invoked with a nil Context.
-	DefaultContext = Background()
+	DefaultContext = context.Background()
 )
 
 type contextKey uint8
@@ -192,12 +193,12 @@ type Logger interface {
 }
 
 // New returns a Logger for the provided context.
-func New(ctx Context) Logger {
+func New(ctx context.Context) Logger {
 	return &logger{ctx}
 }
 
 type logger struct {
-	ctx Context
+	ctx context.Context
 }
 
 func (l *logger) Debug(msg string, args ...interface{}) {
@@ -245,25 +246,25 @@ type Entry interface {
 	WithError(err error) Entry
 
 	// Debug emits a log entry at the DEBUG level.
-	Debug(ctx Context, msg string, args ...interface{})
+	Debug(ctx context.Context, msg string, args ...interface{})
 
 	// Info emits a log entry at the INFO level.
-	Info(ctx Context, msg string, args ...interface{})
+	Info(ctx context.Context, msg string, args ...interface{})
 
 	// Print emits a log entry at the INFO level.
-	Print(ctx Context, msg string, args ...interface{})
+	Print(ctx context.Context, msg string, args ...interface{})
 
 	// Warn emits a log entry at the WARN level.
-	Warn(ctx Context, msg string, args ...interface{})
+	Warn(ctx context.Context, msg string, args ...interface{})
 
 	// Error emits a log entry at the ERROR level.
-	Error(ctx Context, msg string, args ...interface{})
+	Error(ctx context.Context, msg string, args ...interface{})
 
 	// Fatal emits a log entry at the FATAL level.
-	Fatal(ctx Context, msg string, args ...interface{})
+	Fatal(ctx context.Context, msg string, args ...interface{})
 
 	// Panic emits a log entry at the PANIC level.
-	Panic(ctx Context, msg string, args ...interface{})
+	Panic(ctx context.Context, msg string, args ...interface{})
 }
 
 // Appender is the interface that must be implemented by the logging frameworks
@@ -273,7 +274,7 @@ type Appender interface {
 	// Append is implemented by logging frameworks to accept the log entry
 	// at the provided level, its message, and its associated field data.
 	Append(
-		ctx Context,
+		ctx context.Context,
 		lvl Level,
 		fields map[string]interface{},
 		msg string)
@@ -298,51 +299,49 @@ func WithError(err error) Entry {
 }
 
 // Debug emits a log entry at the DEBUG level.
-func Debug(ctx Context, msg string, args ...interface{}) {
+func Debug(ctx context.Context, msg string, args ...interface{}) {
 	sendToAppender(ctx, DebugLevel, nil, msg, args...)
 }
 
 // Info emits a log entry at the INFO level.
-func Info(ctx Context, msg string, args ...interface{}) {
+func Info(ctx context.Context, msg string, args ...interface{}) {
 	sendToAppender(ctx, InfoLevel, nil, msg, args...)
 }
 
 // Print emits a log entry at the INFO level.
-func Print(ctx Context, msg string, args ...interface{}) {
+func Print(ctx context.Context, msg string, args ...interface{}) {
 	sendToAppender(ctx, InfoLevel, nil, msg, args...)
 }
 
 // Warn emits a log entry at the WARN level.
-func Warn(ctx Context, msg string, args ...interface{}) {
+func Warn(ctx context.Context, msg string, args ...interface{}) {
 	sendToAppender(ctx, WarnLevel, nil, msg, args...)
 }
 
 // Error emits a log entry at the ERROR level.
-func Error(ctx Context, msg string, args ...interface{}) {
+func Error(ctx context.Context, msg string, args ...interface{}) {
 	sendToAppender(ctx, ErrorLevel, nil, msg, args...)
 }
 
 // Fatal emits a log entry at the FATAL level.
-func Fatal(ctx Context, msg string, args ...interface{}) {
+func Fatal(ctx context.Context, msg string, args ...interface{}) {
 	sendToAppender(ctx, FatalLevel, nil, msg, args...)
 }
 
 // Panic emits a log entry at the PANIC level.
-func Panic(ctx Context, msg string, args ...interface{}) {
+func Panic(ctx context.Context, msg string, args ...interface{}) {
 	sendToAppender(ctx, PanicLevel, nil, msg, args...)
 }
 
-var defaultCtx = Background()
-
 func sendToAppender(
-	ctx Context,
+	ctx context.Context,
 	lvl Level,
 	fields map[string]interface{},
 	msg string,
 	args ...interface{}) {
 
 	if ctx == nil {
-		ctx = defaultCtx
+		ctx = DefaultContext
 	}
 
 	// do not append if the provided log level is less than that of the
@@ -379,7 +378,7 @@ func sendToAppender(
 	a.Append(ctx, lvl, fields, msg)
 }
 
-func getLevel(ctx Context) Level {
+func getLevel(ctx context.Context) Level {
 	if ctx == nil {
 		return DefaultLevel
 	}
@@ -390,12 +389,12 @@ func getLevel(ctx Context) Level {
 	return DefaultLevel
 }
 
-func getAppender(ctx Context) Appender {
+func getAppender(ctx context.Context) Appender {
 	if ctx == nil {
 		return DefaultAppender
 	}
 
-	if ctx == defaultCtx {
+	if ctx == DefaultContext {
 		return DefaultAppender
 	}
 
@@ -407,7 +406,7 @@ func getAppender(ctx Context) Appender {
 }
 
 func inspectCustomCtxFields(
-	ctx Context,
+	ctx context.Context,
 	lvl Level,
 	fields *map[string]interface{},
 	msg string) {
@@ -419,7 +418,7 @@ func inspectCustomCtxFields(
 		ctxFields := tv()
 		swapFields(fields, &ctxFields)
 	case func(
-		ctx Context,
+		ctx context.Context,
 		lvl Level,
 		fields map[string]interface{},
 		msg string) map[string]interface{}:
@@ -463,30 +462,30 @@ func (e *entry) WithError(err error) Entry {
 	return e
 }
 
-func (e *entry) Debug(ctx Context, msg string, args ...interface{}) {
+func (e *entry) Debug(ctx context.Context, msg string, args ...interface{}) {
 	sendToAppender(ctx, DebugLevel, e.fields, msg, args...)
 }
 
-func (e *entry) Info(ctx Context, msg string, args ...interface{}) {
+func (e *entry) Info(ctx context.Context, msg string, args ...interface{}) {
 	sendToAppender(ctx, InfoLevel, e.fields, msg, args...)
 }
 
-func (e *entry) Print(ctx Context, msg string, args ...interface{}) {
+func (e *entry) Print(ctx context.Context, msg string, args ...interface{}) {
 	sendToAppender(ctx, InfoLevel, e.fields, msg, args...)
 }
 
-func (e *entry) Warn(ctx Context, msg string, args ...interface{}) {
+func (e *entry) Warn(ctx context.Context, msg string, args ...interface{}) {
 	sendToAppender(ctx, WarnLevel, e.fields, msg, args...)
 }
 
-func (e *entry) Error(ctx Context, msg string, args ...interface{}) {
+func (e *entry) Error(ctx context.Context, msg string, args ...interface{}) {
 	sendToAppender(ctx, ErrorLevel, e.fields, msg, args...)
 }
 
-func (e *entry) Fatal(ctx Context, msg string, args ...interface{}) {
+func (e *entry) Fatal(ctx context.Context, msg string, args ...interface{}) {
 	sendToAppender(ctx, FatalLevel, e.fields, msg, args...)
 }
 
-func (e *entry) Panic(ctx Context, msg string, args ...interface{}) {
+func (e *entry) Panic(ctx context.Context, msg string, args ...interface{}) {
 	sendToAppender(ctx, PanicLevel, e.fields, msg, args...)
 }

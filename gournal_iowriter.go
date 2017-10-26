@@ -2,6 +2,7 @@ package gournal
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -23,7 +24,7 @@ type appender struct {
 }
 
 func (a *appender) Append(
-	ctx Context,
+	ctx context.Context,
 	lvl Level,
 	fields map[string]interface{},
 	msg string) {

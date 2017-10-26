@@ -1,6 +1,7 @@
 package benchmarks
 
 import (
+	"context"
 	"log"
 	"os"
 	"testing"
@@ -18,7 +19,7 @@ import (
 	gzap "github.com/thecodeteam/gournal/zap"
 )
 
-var gaeCtx gournal.Context
+var gaeCtx context.Context
 
 func TestMain(m *testing.M) {
 	gournal.DefaultLevel = gournal.DebugLevel
@@ -32,7 +33,7 @@ func TestMain(m *testing.M) {
 		fmt.Println(err)
 		os.Exit(1)
 	}*/
-	gaeCtx = gournal.Background()
+	gaeCtx = context.Background()
 
 	ec := m.Run()
 
@@ -121,16 +122,16 @@ func BenchmarkGournalZapWithFields(b *testing.B) {
 	benchmarkWithFields(b, ggae.New())
 }*/
 
-func newContext(a gournal.Appender) gournal.Context {
-	/*var ctx gournal.Context
+func newContext(a gournal.Appender) context.Context {
+	/*var ctx context.Context
 	if a == ggae.New() {
 		ctx = gaeCtx
 	} else {
-		ctx = gournal.Background()
+		ctx = context.Background()
 	}*/
-	ctx := gournal.Background()
-	ctx = gournal.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
-	ctx = gournal.WithValue(ctx, gournal.AppenderKey(), a)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
+	ctx = context.WithValue(ctx, gournal.AppenderKey(), a)
 	return ctx
 }
 

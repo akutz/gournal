@@ -5,6 +5,7 @@
 package gae
 
 import (
+	"context"
 	"fmt"
 
 	gae "google.golang.org/appengine/log"
@@ -23,7 +24,7 @@ func New() gournal.Appender {
 }
 
 func (a appender) Append(
-	ctx gournal.Context,
+	ctx context.Context,
 	lvl gournal.Level,
 	fields map[string]interface{},
 	msg string) {

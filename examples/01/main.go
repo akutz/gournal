@@ -1,14 +1,16 @@
 package main
 
 import (
+	"context"
+
 	"github.com/thecodeteam/gournal"
 	"github.com/thecodeteam/gournal/logrus"
 )
 
 func main() {
-	ctx := gournal.Background()
-	ctx = gournal.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
-	ctx = gournal.WithValue(ctx, gournal.AppenderKey(), logrus.New())
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
+	ctx = context.WithValue(ctx, gournal.AppenderKey(), logrus.New())
 
 	gournal.Info(ctx, "Hello %s", "Bob")
 

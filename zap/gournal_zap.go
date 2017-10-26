@@ -3,6 +3,7 @@
 package zap
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -27,7 +28,7 @@ func NewWithOptions(enc zap.Encoder, opts ...zap.Option) gournal.Appender {
 }
 
 func (a *appender) Append(
-	ctx gournal.Context,
+	ctx context.Context,
 	lvl gournal.Level,
 	fields map[string]interface{},
 	msg string) {

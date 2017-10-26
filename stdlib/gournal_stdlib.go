@@ -3,6 +3,7 @@
 package stdlib
 
 import (
+	"context"
 	"io"
 	"log"
 	"os"
@@ -29,7 +30,7 @@ type appender struct {
 }
 
 func (a *appender) Append(
-	ctx gournal.Context,
+	ctx context.Context,
 	lvl gournal.Level,
 	fields map[string]interface{},
 	msg string) {

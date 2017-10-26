@@ -3,6 +3,7 @@
 package logrus
 
 import (
+	"context"
 	"io"
 
 	"github.com/sirupsen/logrus"
@@ -30,7 +31,7 @@ func NewWithOptions(
 }
 
 func (a *appender) Append(
-	ctx gournal.Context,
+	ctx context.Context,
 	lvl gournal.Level,
 	fields map[string]interface{},
 	msg string) {

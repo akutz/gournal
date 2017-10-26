@@ -20,14 +20,16 @@ data:
 package main
 
 import (
+	"context"
+
 	"github.com/thecodeteam/gournal"
 	"github.com/thecodeteam/gournal/logrus"
 )
 
 func main() {
-	ctx := gournal.Background()
-	ctx = gournal.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
-	ctx = gournal.WithValue(ctx, gournal.AppenderKey(), logrus.New())
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
+	ctx = context.WithValue(ctx, gournal.AppenderKey(), logrus.New())
 
 	gournal.Info(ctx, "Hello %s", "Bob")
 
@@ -42,52 +44,16 @@ To run the above example, clone this project and execute the following from the
 command line:
 
 ``` bash
-$ make run-exmaple-1
+$ go run ./examples/01/main.go
 INFO[0000] Hello Bob                                    
 WARN[0000] Hello Mary                                    location=Austin size=1
 ```
-
-## Go 1.7 Support
-Prior to Go 1.7 the Context type was not part of the Go standard library
-(StdLib). Instead the Go Context was provided via the `golang.org/x/net/context`
-package. However, due to the growing importance of the type, it is supported by
-Go 1.7 as part of the StdLib in the `context` package.
-
-Since Go interfaces use duck-typing, where an interface is defined is not
-entirely important. However, if a Go 1.7 application imports the old package
-`golang.org/x/net/context`, the application will be needlessly introducing
-an additional dependency since the Go 1.7 StdLib includes the Context type
-already.
-
-Yet, Gournal cannot just immediately abandon support for the old import path
-as not all applications are able to adopt Go 1.7 on day one. Therefore Gournal
-needs to support both pre-1.7 and 1.7 import paths for the Context type. To
-achieve this Gournal defines the following type:
-
-```go
-type Context interface {
-	gournal.Context
-}
-```
-
-The above type is defined in two files. One file is activated for pre-Go 1.7
-toolchains and uses the old import path. The other file is activated for Go 1.7
-and uses the StdLib import path. For convenience Gournal also redefines the
-`WithValue` and `Background` functions.
-
-Because Gournal's Appender interface uses Gournal's Context interface
-definition, implementations of the Appender interface will also be required to
-reference `gournal.Appender` when defining the `Append` function. However,
-any object that satisfies a Google Context, pre or post 1.7, satisfies a
-Gournal Context as well since the latter is just an empty interface that
-inherits one of the former.
 
 ## Compatability
 Gournal provides ready-to-use Appenders for the following logging frameworks:
 
   * [Logrus](https://github.com/thecodeteam/gournal/tree/master/logrus)
   * [Zap](https://github.com/thecodeteam/gournal/tree/master/zap)
-  * [Google App Engine](https://github.com/thecodeteam/gournal/tree/master/gae)
   * [`gournal.Logger`](https://github.com/thecodeteam/gournal/tree/master/stdlib)
   * [`io.Writer`](https://github.com/thecodeteam/gournal/tree/master/iowriter)
 
@@ -107,49 +73,33 @@ Benchmark | Logger | Time | Malloc Size | Malloc Count
 Native without Fields | `gournal.Logger` | 1024 ns/op | 16 B/op | 1 allocs/op
        | Logrus | 4118 ns/op | 832 B/op | 19 allocs/op
        | Zap | 1347 ns/op | 0 B/op | 0 allocs/op
-       | Google App Engine | 1302 ns/op | 32 B/op | 1 allocs/op
 Gournal without Fields | `gournal.Logger` | 1230 ns/op | 16 B/op | 1 allocs/op
        | Logrus | 3784 ns/op | 832 B/op | 19 allocs/op
        | Zap | 1448 ns/op | 0 B/op | 0 allocs/op
-       | Google App Engine | 1641 ns/op | 32 B/op | 1 allocs/op
 Gournal with Fields | `gournal.Logger` | 4424 ns/op | 881 B/op | 18 allocs/op
        | Logrus | 6467 ns/op | 1746 B/op | 31 allocs/op
        | Zap | 3160 ns/op | 641 B/op | 8 allocs/op
-       | Google App Engine | 5196 ns/op | 1041 B/op | 20 allocs/op
 
 The above benchmark information (results may vary) was generated using the
 following command:
 
 ```bash
-$ make benchmark
-GOOS=darwin GOARCH=amd64 go install .
-GOOS=darwin GOARCH=amd64 go install ./gae
-GOOS=darwin GOARCH=amd64 go install ./logrus
-GOOS=darwin GOARCH=amd64 go install ./stdlib
-GOOS=darwin GOARCH=amd64 go install ./zap
-./.gaesdk/1.9.40/go_appengine/goapp test -cover -coverpkg 'github.com/thecodeteam/gournal' -c -o benchmarks/benchmarks.test ./benchmarks
-warning: no packages being tested depend on github.com/thecodeteam/gournal
-benchmarks/benchmarks.test -test.run Benchmark -test.bench . -test.benchmem 2> /dev/null
+$ go test ./benchmarks -bench . -benchmem 2> /dev/null
+goos: darwin
+goarch: amd64
+pkg: github.com/thecodeteam/gournal/benchmarks
+BenchmarkNativeStdLibWithoutFields-8    	 1000000	      1416 ns/op	      16 B/op	       1 allocs/op
+BenchmarkNativeLogrusWithoutFields-8    	  500000	      2205 ns/op	     336 B/op	      13 allocs/op
+BenchmarkNativeZapWithoutFields-8       	 1000000	      1456 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGournalStdLibWithoutFields-8   	 1000000	      1571 ns/op	      16 B/op	       1 allocs/op
+BenchmarkGournalLogrusWithoutFields-8   	 1000000	      2131 ns/op	     336 B/op	      13 allocs/op
+BenchmarkGournalZapWithoutFields-8      	 1000000	      1481 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGournalStdLibWithFields-8      	  500000	      2998 ns/op	     945 B/op	      19 allocs/op
+BenchmarkGournalLogrusWithFields-8      	  500000	      3519 ns/op	    1483 B/op	      30 allocs/op
+BenchmarkGournalZapWithFields-8         	  500000	      2446 ns/op	     721 B/op	      10 allocs/op
 PASS
-BenchmarkNativeStdLibWithoutFields-8 	 1000000	      1024 ns/op	      16 B/op	       1 allocs/op
-BenchmarkNativeLogrusWithoutFields-8 	  300000	      4118 ns/op	     832 B/op	      19 allocs/op
-BenchmarkNativeZapWithoutFields-8    	 1000000	      1347 ns/op	       0 B/op	       0 allocs/op
-BenchmarkNativeGAEWithoutFields-8    	 1000000	      1302 ns/op	      32 B/op	       1 allocs/op
-BenchmarkGournalStdLibWithoutFields-8	 1000000	      1230 ns/op	      16 B/op	       1 allocs/op
-BenchmarkGournalLogrusWithoutFields-8	  500000	      3784 ns/op	     832 B/op	      19 allocs/op
-BenchmarkGournalZapWithoutFields-8   	 1000000	      1448 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGournalGAEWithoutFields-8   	 1000000	      1641 ns/op	      32 B/op	       1 allocs/op
-BenchmarkGournalStdLibWithFields-8   	  300000	      4424 ns/op	     881 B/op	      18 allocs/op
-BenchmarkGournalLogrusWithFields-8   	  300000	      6467 ns/op	    1745 B/op	      31 allocs/op
-BenchmarkGournalZapWithFields-8      	  500000	      3160 ns/op	     641 B/op	       8 allocs/op
-BenchmarkGournalGAEWithFields-8      	  300000	      5196 ns/op	    1041 B/op	      20 allocs/op
-coverage: 21.6% of statements in github.com/thecodeteam/gournal
+ok  	github.com/thecodeteam/gournal/benchmarks	13.887s
 ```
-
-Please keep in mind that the above results will vary based upon the version of
-dependencies used. This project uses
-[Glide](https://github.com/Masterminds/glide/) to pin dependencies such as
-Logrus and Zap.
 
 ## Configuration
 Gournal is configured primarily via the Context instances supplied to the
@@ -161,7 +111,7 @@ Global Variable | Default Value | Description
 -----------------|---------------|-----------
 `DefaultLevel`  | `ErrorLevel` | Used when a Level is not present in a Context.
 `DefaultAppender` | `nil` | Used when an Appender is not present in a Context.
-`DefaultContext` | `gournal.Background()` | Used when a log method is invoked with a nil Context.
+`DefaultContext` | `context.Background()` | Used when a log method is invoked with a nil Context.
 
 Please note that there is no default value for `DefaultAppender`. If this
 field is not assigned and log function is invoked with a nil `Context` or one
@@ -185,6 +135,8 @@ logging frameworks in the same program:
 package main
 
 import (
+	"context"
+
 	"github.com/thecodeteam/gournal"
 	"github.com/thecodeteam/gournal/logrus"
 	"github.com/thecodeteam/gournal/zap"
@@ -203,14 +155,14 @@ func main() {
 		"location": "Boston",
 	}).Error(nil, "Hello %s", "Bob")
 
-	ctx := gournal.Background()
-	ctx = gournal.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
 
 	// Even though this next call provides a valid Context, there is no
 	// Appender present in the Context so the DefaultAppender will be used.
 	gournal.Info(ctx, "Hello %s", "Mary")
 
-	ctx = gournal.WithValue(ctx, gournal.AppenderKey(), logrus.New())
+	ctx = context.WithValue(ctx, gournal.AppenderKey(), logrus.New())
 
 	// This last log function uses a Context that has been created with a
 	// Logrus Appender. Even though the DefaultAppender is assigned and is a
@@ -227,7 +179,7 @@ To run the above example, clone this project and execute the following from the
 command line:
 
 ```bash
-$ make run-example-2
+$ go run ./examples/02/main.go
 {"level":"error","ts":1470251785.437946,"msg":"Hello Bob","size":2,"location":"Boston"}
 {"level":"info","ts":1470251785.4379828,"msg":"Hello Mary"}
 WARN[0000] Hello Alice                                   location=Austin size=1
@@ -245,16 +197,18 @@ below:
 package main
 
 import (
+	"context"
+
 	"github.com/thecodeteam/gournal"
 	"github.com/thecodeteam/gournal/logrus"
 )
 
 func main() {
-	ctx := gournal.Background()
-	ctx = gournal.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
-	ctx = gournal.WithValue(ctx, gournal.AppenderKey(), logrus.New())
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
+	ctx = context.WithValue(ctx, gournal.AppenderKey(), logrus.New())
 
-	ctx = gournal.WithValue(
+	ctx = context.WithValue(
 		ctx,
 		gournal.FieldsKey(),
 		map[string]interface{}{
@@ -266,7 +220,7 @@ func main() {
 	// of the planet.
 	gournal.Info(ctx, "Discovered planet")
 
-	ctx = gournal.WithValue(
+	ctx = context.WithValue(
 		ctx,
 		gournal.FieldsKey(),
 		func() map[string]interface{} {
@@ -283,10 +237,10 @@ func main() {
 	// Create a Context with the FieldsKey that points to a function which
 	// returns a Context's derived fields based upon what data was provided
 	// to a the log function.
-	ctx = gournal.WithValue(
+	ctx = context.WithValue(
 		ctx,
 		gournal.FieldsKey(),
-		func(ctx gournal.Context,
+		func(ctx context.Context,
 			lvl gournal.Level,
 			fields map[string]interface{},
 			args ...interface{}) map[string]interface{} {
@@ -326,7 +280,7 @@ To run the above example, clone this project and execute the following from the
 command line:
 
 ```bash
-$ make run-example-3
+$ go run ./examples/03/main.go
 INFO[0000] Discovered planet                             color=65280 name=Venus
 INFO[0000] Discovered planet                             distance=42 galaxy=Milky Way
 INFO[0000] Discovered planet                             point={x:1 y:-1}
@@ -343,6 +297,7 @@ not meet the level qualifications:
 package main
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/thecodeteam/gournal"
@@ -362,8 +317,8 @@ func (s myString) Format(f fmt.State, c rune) {
 }
 
 func main() {
-	ctx := gournal.Background()
-	ctx = gournal.WithValue(ctx, gournal.AppenderKey(), logrus.New())
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, gournal.AppenderKey(), logrus.New())
 
 	counter := 0
 
@@ -378,7 +333,7 @@ func main() {
 		fmt.Println("* INVOKED CONTEXT FIELDS")
 		return map[string]interface{}{"counter": counter}
 	}
-	ctx = gournal.WithValue(ctx, gournal.FieldsKey(), getCtxFieldsFunc)
+	ctx = context.WithValue(ctx, gournal.FieldsKey(), getCtxFieldsFunc)
 
 	var name myString = "Bob"
 
@@ -394,7 +349,7 @@ func main() {
 	oldCtx := ctx
 
 	// Set the context's log level to be INFO.
-	ctx = gournal.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
+	ctx = context.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
 
 	// Note the log level has been changed to INFO. This is also a marker to
 	// show that the previous log and messages generated by the functions should
@@ -441,8 +396,7 @@ To run the above example, clone this project and execute the following from the
 command line:
 
 ```bash
-$ make run-example-4
-go run ./examples/04/main.go
+$ go run ./examples/04/main.go
 * CTX LOG LEVEL INFO
 * INVOKED CONTEXT FIELDS
 * INVOKED MYSTRING FORMATTER
