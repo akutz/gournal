@@ -3,12 +3,13 @@
 package zap
 
 import (
+	"context"
 	"fmt"
 	"time"
 
 	"github.com/uber-go/zap"
 
-	"github.com/codedellemc/gournal"
+	"github.com/thecodeteam/gournal"
 )
 
 type appender struct {
@@ -27,7 +28,7 @@ func NewWithOptions(enc zap.Encoder, opts ...zap.Option) gournal.Appender {
 }
 
 func (a *appender) Append(
-	ctx gournal.Context,
+	ctx context.Context,
 	lvl gournal.Level,
 	fields map[string]interface{},
 	msg string) {

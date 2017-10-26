@@ -1,16 +1,18 @@
 package main
 
 import (
-	"github.com/codedellemc/gournal"
-	"github.com/codedellemc/gournal/logrus"
+	"context"
+
+	"github.com/thecodeteam/gournal"
+	"github.com/thecodeteam/gournal/logrus"
 )
 
 func main() {
-	ctx := gournal.Background()
-	ctx = gournal.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
-	ctx = gournal.WithValue(ctx, gournal.AppenderKey(), logrus.New())
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
+	ctx = context.WithValue(ctx, gournal.AppenderKey(), logrus.New())
 
-	ctx = gournal.WithValue(
+	ctx = context.WithValue(
 		ctx,
 		gournal.FieldsKey(),
 		map[string]interface{}{
@@ -22,7 +24,7 @@ func main() {
 	// of the planet.
 	gournal.Info(ctx, "Discovered planet")
 
-	ctx = gournal.WithValue(
+	ctx = context.WithValue(
 		ctx,
 		gournal.FieldsKey(),
 		func() map[string]interface{} {
@@ -39,10 +41,10 @@ func main() {
 	// Create a Context with the FieldsKey that points to a function which
 	// returns a Context's derived fields based upon what data was provided
 	// to a the log function.
-	ctx = gournal.WithValue(
+	ctx = context.WithValue(
 		ctx,
 		gournal.FieldsKey(),
-		func(ctx gournal.Context,
+		func(ctx context.Context,
 			lvl gournal.Level,
 			fields map[string]interface{},
 			args ...interface{}) map[string]interface{} {

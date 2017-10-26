@@ -1,11 +1,12 @@
 package stdlib
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/codedellemc/gournal"
+	"github.com/thecodeteam/gournal"
 )
 
 func TestStdLibAppenderNoFields(t *testing.T) {
@@ -35,9 +36,9 @@ func TestStdLibAppenderPanic(t *testing.T) {
 	gournal.Panic(ctx(), "Hello %s\n", "Bob")
 }
 
-func ctx() gournal.Context {
-	ctx := gournal.Background()
-	ctx = gournal.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
-	ctx = gournal.WithValue(ctx, gournal.AppenderKey(), New())
+func ctx() context.Context {
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
+	ctx = context.WithValue(ctx, gournal.AppenderKey(), New())
 	return ctx
 }

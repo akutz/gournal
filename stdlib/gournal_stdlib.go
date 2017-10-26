@@ -3,11 +3,12 @@
 package stdlib
 
 import (
+	"context"
 	"io"
 	"log"
 	"os"
 
-	"github.com/codedellemc/gournal"
+	"github.com/thecodeteam/gournal"
 )
 
 // New returns a stdlib logger that implements the Gournal Appender interface.
@@ -29,7 +30,7 @@ type appender struct {
 }
 
 func (a *appender) Append(
-	ctx gournal.Context,
+	ctx context.Context,
 	lvl gournal.Level,
 	fields map[string]interface{},
 	msg string) {

@@ -1,9 +1,11 @@
 package main
 
 import (
-	"github.com/codedellemc/gournal"
-	"github.com/codedellemc/gournal/logrus"
-	"github.com/codedellemc/gournal/zap"
+	"context"
+
+	"github.com/thecodeteam/gournal"
+	"github.com/thecodeteam/gournal/logrus"
+	"github.com/thecodeteam/gournal/zap"
 )
 
 func main() {
@@ -19,14 +21,14 @@ func main() {
 		"location": "Boston",
 	}).Error(nil, "Hello %s", "Bob")
 
-	ctx := gournal.Background()
-	ctx = gournal.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, gournal.LevelKey(), gournal.InfoLevel)
 
 	// Even though this next call provides a valid Context, there is no
 	// Appender present in the Context so the DefaultAppender will be used.
 	gournal.Info(ctx, "Hello %s", "Mary")
 
-	ctx = gournal.WithValue(ctx, gournal.AppenderKey(), logrus.New())
+	ctx = context.WithValue(ctx, gournal.AppenderKey(), logrus.New())
 
 	// This last log function uses a Context that has been created with a
 	// Logrus Appender. Even though the DefaultAppender is assigned and is a
