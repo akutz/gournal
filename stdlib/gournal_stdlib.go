@@ -8,7 +8,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/thecodeteam/gournal"
+	"github.com/akutz/gournal"
 )
 
 // New returns a stdlib logger that implements the Gournal Appender interface.

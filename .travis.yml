@@ -1,4 +1,4 @@
-go_import_path: github.com/thecodeteam/gournal
+go_import_path: github.com/akutz/gournal
 
 language: go
 go:

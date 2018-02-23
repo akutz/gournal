@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/thecodeteam/gournal"
-	"github.com/thecodeteam/gournal/logrus"
+	"github.com/akutz/gournal"
+	"github.com/akutz/gournal/logrus"
 )
 
 // myString is a custom type that has a custom fmt.Format function.

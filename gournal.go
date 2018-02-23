@@ -11,7 +11,7 @@ frameworks such as Logrus, Zap, etc. can easily participate as a Gournal
 Appender.
 
 For more information on Gournal's features or how to use it, please refer
-to the project's README file or https://github.com/thecodeteam/gournal.
+to the project's README file or https://github.com/akutz/gournal.
 */
 package gournal
 

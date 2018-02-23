@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 
-	"github.com/thecodeteam/gournal"
-	"github.com/thecodeteam/gournal/logrus"
+	"github.com/akutz/gournal"
+	"github.com/akutz/gournal/logrus"
 )
 
 func main() {

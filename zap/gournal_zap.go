@@ -9,7 +9,7 @@ import (
 
 	"github.com/uber-go/zap"
 
-	"github.com/thecodeteam/gournal"
+	"github.com/akutz/gournal"
 )
 
 type appender struct {

@@ -10,7 +10,7 @@ import (
 
 	gaetest "google.golang.org/appengine/aetest"
 
-	"github.com/thecodeteam/gournal"
+	"github.com/akutz/gournal"
 )
 
 var gaeCtx gournal.Context

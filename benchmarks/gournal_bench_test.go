@@ -12,11 +12,11 @@ import (
 	//gaetest "google.golang.org/appengine/aetest"
 	//gae "google.golang.org/appengine/log"
 
-	"github.com/thecodeteam/gournal"
-	//ggae "github.com/thecodeteam/gournal/gae"
-	glogrus "github.com/thecodeteam/gournal/logrus"
-	glog "github.com/thecodeteam/gournal/stdlib"
-	gzap "github.com/thecodeteam/gournal/zap"
+	"github.com/akutz/gournal"
+	//ggae "github.com/akutz/gournal/gae"
+	glogrus "github.com/akutz/gournal/logrus"
+	glog "github.com/akutz/gournal/stdlib"
+	gzap "github.com/akutz/gournal/zap"
 )
 
 var gaeCtx context.Context

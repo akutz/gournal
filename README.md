@@ -1,4 +1,4 @@
-# Gournal [![GoDoc](https://godoc.org/github.com/thecodeteam/gournal?status.svg)](https://godoc.org/github.com/thecodeteam/gournal) [![Build Status](https://travis-ci.org/emccode/gournal.svg?branch=master)](https://travis-ci.org/emccode/gournal) [![Go Report Card](https://goreportcard.com/badge/github.com/thecodeteam/gournal)](https://goreportcard.com/report/github.com/thecodeteam/gournal) [![codecov](https://codecov.io/gh/emccode/gournal/branch/master/graph/badge.svg)](https://codecov.io/gh/emccode/gournal)
+# Gournal [![GoDoc](https://godoc.org/github.com/akutz/gournal?status.svg)](https://godoc.org/github.com/akutz/gournal) [![Build Status](https://travis-ci.org/emccode/gournal.svg?branch=master)](https://travis-ci.org/emccode/gournal) [![Go Report Card](https://goreportcard.com/badge/github.com/akutz/gournal)](https://goreportcard.com/report/github.com/akutz/gournal) [![codecov](https://codecov.io/gh/emccode/gournal/branch/master/graph/badge.svg)](https://codecov.io/gh/emccode/gournal)
 Gournal (pronounced "Journal") is a Context-aware logging framework
 that introduces the Google [Context type](https://bgournal.golang.org/context) as
 a first-class parameter to all common log functions such as Info, Debug, etc.
@@ -12,7 +12,7 @@ favorite logger, rather existing logging frameworks such as
 easily participate as a Gournal Appender.
 
 The following
-[example](https://github.com/thecodeteam/gournal/tree/master/examples/01/main.go)
+[example](https://github.com/akutz/gournal/tree/master/examples/01/main.go)
 is a simple program that uses Logrus as a Gournal Appender to emit some log
 data:
 
@@ -22,8 +22,8 @@ package main
 import (
 	"context"
 
-	"github.com/thecodeteam/gournal"
-	"github.com/thecodeteam/gournal/logrus"
+	"github.com/akutz/gournal"
+	"github.com/akutz/gournal/logrus"
 )
 
 func main() {
@@ -52,10 +52,10 @@ WARN[0000] Hello Mary                                    location=Austin size=1
 ## Compatability
 Gournal provides ready-to-use Appenders for the following logging frameworks:
 
-  * [Logrus](https://github.com/thecodeteam/gournal/tree/master/logrus)
-  * [Zap](https://github.com/thecodeteam/gournal/tree/master/zap)
-  * [`gournal.Logger`](https://github.com/thecodeteam/gournal/tree/master/stdlib)
-  * [`io.Writer`](https://github.com/thecodeteam/gournal/tree/master/iowriter)
+  * [Logrus](https://github.com/akutz/gournal/tree/master/logrus)
+  * [Zap](https://github.com/akutz/gournal/tree/master/zap)
+  * [`gournal.Logger`](https://github.com/akutz/gournal/tree/master/stdlib)
+  * [`io.Writer`](https://github.com/akutz/gournal/tree/master/iowriter)
 
 With little overhead, Gournal leverages the Google Context type to provide an
 elegant solution to the absence of features that are commonly found in
@@ -87,7 +87,7 @@ following command:
 $ go test ./benchmarks -bench . -benchmem 2> /dev/null
 goos: darwin
 goarch: amd64
-pkg: github.com/thecodeteam/gournal/benchmarks
+pkg: github.com/akutz/gournal/benchmarks
 BenchmarkNativeStdLibWithoutFields-8    	 1000000	      1416 ns/op	      16 B/op	       1 allocs/op
 BenchmarkNativeLogrusWithoutFields-8    	  500000	      2205 ns/op	     336 B/op	      13 allocs/op
 BenchmarkNativeZapWithoutFields-8       	 1000000	      1456 ns/op	       0 B/op	       0 allocs/op
@@ -98,7 +98,7 @@ BenchmarkGournalStdLibWithFields-8      	  500000	      2998 ns/op	     945 B/op
 BenchmarkGournalLogrusWithFields-8      	  500000	      3519 ns/op	    1483 B/op	      30 allocs/op
 BenchmarkGournalZapWithFields-8         	  500000	      2446 ns/op	     721 B/op	      10 allocs/op
 PASS
-ok  	github.com/thecodeteam/gournal/benchmarks	13.887s
+ok  	github.com/akutz/gournal/benchmarks	13.887s
 ```
 
 ## Configuration
@@ -127,7 +127,7 @@ that is doing the actual logging:
 
 ### Concurrent Logging Frameworks
 The following
-[example](https://github.com/thecodeteam/gournal/tree/master/examples/02/main.go)
+[example](https://github.com/akutz/gournal/tree/master/examples/02/main.go)
 illustrates how to utilize the Gournal `DefaultAppender` as well as multiple
 logging frameworks in the same program:
 
@@ -137,9 +137,9 @@ package main
 import (
 	"context"
 
-	"github.com/thecodeteam/gournal"
-	"github.com/thecodeteam/gournal/logrus"
-	"github.com/thecodeteam/gournal/zap"
+	"github.com/akutz/gournal"
+	"github.com/akutz/gournal/logrus"
+	"github.com/akutz/gournal/zap"
 )
 
 func main() {
@@ -190,7 +190,7 @@ Another nifty feature of Gournal is the ability to provide a Context with
 fields that will get emitted along-side every log message, whether they are
 explicitly provided with log message or not. This feature is illustrated
 in the
-[example](https://github.com/thecodeteam/gournal/tree/master/examples/03/main.go)
+[example](https://github.com/akutz/gournal/tree/master/examples/03/main.go)
 below:
 
 ```go
@@ -199,8 +199,8 @@ package main
 import (
 	"context"
 
-	"github.com/thecodeteam/gournal"
-	"github.com/thecodeteam/gournal/logrus"
+	"github.com/akutz/gournal"
+	"github.com/akutz/gournal/logrus"
 )
 
 func main() {
@@ -300,8 +300,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/thecodeteam/gournal"
-	"github.com/thecodeteam/gournal/logrus"
+	"github.com/akutz/gournal"
+	"github.com/akutz/gournal/logrus"
 )
 
 // myString is a custom type that has a custom fmt.Format function.
